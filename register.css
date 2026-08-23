@@ -1,0 +1,184 @@
+/* Register theme matching login: #464B71, #118AB2, #7CD5C7, #F2F2ED */
+
+:root {
+  --register-primary: #464b71;
+  --register-accent: #118ab2;
+  --register-accent-soft: #7cd5c7;
+  --register-surface: #f2f2ed;
+  --register-text: #464b71;
+  --register-muted: rgba(70, 75, 113, 0.68);
+  --register-border: rgba(70, 75, 113, 0.22);
+  --register-focus: rgba(17, 138, 178, 0.2);
+  --register-radius: 12px;
+  --register-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  padding-top: 70px;
+  background: var(--register-accent-soft);
+  color: var(--register-text);
+  font-family: var(--register-font);
+}
+
+.card {
+  width: 100%;
+  max-width: 1200px;
+  min-height: calc(100vh - 70px);
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--register-accent-soft);
+}
+
+.form-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  border: 2px solid var(--register-accent);
+  border-radius: var(--register-radius);
+  background: color-mix(in srgb, var(--register-surface) 86%, var(--register-accent-soft));
+  box-shadow: 0 8px 24px rgba(70, 75, 113, 0.16);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.form-container:hover {
+  border-color: var(--register-accent-soft);
+  box-shadow: 0 12px 32px rgba(17, 138, 178, 0.24);
+}
+
+.form-container h2 {
+  margin-bottom: 24px;
+  color: var(--register-primary);
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  color: var(--register-text);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.field input,
+.field select {
+  padding: 12px 16px;
+  border: 1px solid var(--register-border);
+  border-radius: 8px;
+  background: var(--register-surface);
+  color: var(--register-text);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.field input::placeholder {
+  color: var(--register-muted);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--register-accent);
+  box-shadow: 0 0 0 3px var(--register-focus);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.register-btn {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  background: var(--register-accent);
+  color: var(--register-surface);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.register-btn:hover {
+  background: var(--register-primary);
+  box-shadow: 0 6px 20px rgba(17, 138, 178, 0.3);
+  transform: translateY(-2px);
+}
+
+.register-btn:active {
+  transform: translateY(0);
+}
+
+.login-link {
+  margin-top: 20px;
+  color: var(--register-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.login-link a {
+  color: var(--register-accent);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+  color: var(--register-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .form-container {
+    padding: 24px;
+  }
+
+  .form-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+
+  .field input,
+  .field select {
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+
+  .register-btn {
+    padding: 12px 20px;
+    font-size: 13px;
+  }
+}

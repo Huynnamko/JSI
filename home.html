@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Weather WeFo | Today</title>
+
+    <link rel="stylesheet" href="home.css">
+
+</head>
+
+
+<body>
+
+<div class="weather-shell">
+
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+
+    <div class="rain rain-one" aria-hidden="true">
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+    </div>
+
+
+    <div class="rain rain-two" aria-hidden="true">
+        <i></i>
+        <i></i>
+        <i></i>
+    </div>
+
+
+
+    <!-- ================= HEADER / TASKBAR ================= -->
+
+    <header class="site-header">
+
+        <a
+            class="brand"
+            href="home.html"
+            aria-label="Weather WeFo home"
+        >
+
+            <span
+                class="brand-mark"
+                aria-hidden="true"
+            >
+                <span></span>
+            </span>
+
+            <span>
+                Weather WeFo
+            </span>
+
+        </a>
+
+
+        <nav
+            class="main-nav"
+            aria-label="Main navigation"
+        >
+
+            <a
+                class="active"
+                href="home.html"
+            >
+                Today
+            </a>
+
+            <a href="forecast.html">
+                Forecast
+            </a>
+
+            <a href="climate.html">
+                Climate
+            </a>
+
+            <a href="map.html">
+                Map
+            </a>
+
+        </nav>
+
+
+        <a
+            class="login-button"
+            href="login.html"
+        >
+            Login
+        </a>
+
+
+        <button
+            class="location-button"
+            type="button"
+            id="location-button"
+        >
+
+            <span aria-hidden="true">
+                ⌖
+            </span>
+
+            My Location
+
+        </button>
+
+    </header>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main
+        id="top"
+        class="hero"
+    >
+
+
+        <!-- ================= LEFT CONTENT ================= -->
+
+        <section
+            class="hero-copy"
+            aria-labelledby="hero-title"
+        >
+
+            <p class="eyebrow">
+
+                <span class="eyebrow-dot"></span>
+
+                Visual Weather Data
+
+            </p>
+
+
+            <h1 id="hero-title">
+
+                Weather<br>
+
+                <em>
+                    how is it today?
+                </em>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                A clearer view of today's sky —
+                fast, accurate, and easy to understand.
+
+            </p>
+
+
+
+            <!-- ================= SEARCH ================= -->
+
+            <form
+                class="search-form"
+                id="search-form"
+            >
+
+                <span
+                    class="search-icon"
+                    aria-hidden="true"
+                >
+                    ⌕
+                </span>
+
+
+                <label
+                    class="sr-only"
+                    for="city"
+                >
+                    Search city
+                </label>
+
+
+                <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    placeholder="Search city..."
+                    autocomplete="off"
+                >
+
+
+                <button type="submit">
+
+                    Explore
+
+                    <span aria-hidden="true">
+                        →
+                    </span>
+
+                </button>
+
+            </form>
+
+
+
+            <!-- ================= QUICK CITIES ================= -->
+
+            <div
+                class="quick-cities"
+                aria-label="Popular cities"
+            >
+
+                <span>
+                    Viewing
+                </span>
+
+
+                <button
+                    type="button"
+                    data-city="Hà Nội"
+                >
+                    Hà Nội
+                </button>
+
+
+                <button
+                    type="button"
+                    data-city="Đà Nẵng"
+                >
+                    Đà Nẵng
+                </button>
+
+
+                <button
+                    type="button"
+                    data-city="TP. Hồ Chí Minh"
+                >
+                    TP. Hồ Chí Minh
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= WEATHER CAROUSEL ================= -->
+
+        <section
+            class="weather-visual"
+            id="forecast"
+            aria-label="Weather list"
+        >
+
+            <div class="card-stack">
+
+
+                <!-- ================= CARD 1 ================= -->
+
+                <article
+                    class="weather-card is-active"
+                    data-city="Hà Nội"
+                >
+
+                    <div class="card-topline">
+
+                        <span>
+                            Current weather
+                        </span>
+
+
+                        <span class="live">
+
+                            <i></i>
+
+                            Live
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="place-row">
+
+                        <div>
+
+                            <p class="place">
+
+                                Hà Nội
+
+                                <span aria-hidden="true">
+                                    ⌄
+                                </span>
+
+                            </p>
+
+
+                            <p class="date">
+                                Saturday, August 23
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="weather-icon sun-cloud"
+                            aria-label="Partly sunny"
+                        >
+                            <span></span>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="temperature-row">
+
+                        <strong>
+                            31°
+                        </strong>
+
+
+                        <div>
+
+                            <p>
+                                Feels like 35°
+                            </p>
+
+
+                            <p class="condition">
+                                Partly sunny, clear skies
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="metrics">
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ◌
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    Humidity
+                                </b>
+
+                                <strong>
+                                    68%
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ≋
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    Wind
+                                </b>
+
+                                <strong>
+                                    12 km/h
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ◒
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    UV index
+                                </b>
+
+                                <strong>
+                                    High
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="hourly-heading">
+
+                        <span>
+                            Today
+                        </span>
+
+
+                        <a href="forecast.html">
+                            View details →
+                        </a>
+
+                    </div>
+
+
+
+                    <div class="hourly-list">
+
+                        <div>
+
+                            <span>
+                                14:00
+                            </span>
+
+                            <b class="mini-sun"></b>
+
+                            <strong>
+                                31°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                16:00
+                            </span>
+
+                            <b class="mini-cloud"></b>
+
+                            <strong>
+                                30°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                18:00
+                            </span>
+
+                            <b class="mini-rain"></b>
+
+                            <strong>
+                                28°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                20:00
+                            </span>
+
+                            <b class="mini-moon"></b>
+
+                            <strong>
+                                27°
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- ================= CARD 2 ================= -->
+
+                <article
+                    class="weather-card"
+                    data-city="Đà Nẵng"
+                >
+
+                    <div class="card-topline">
+
+                        <span>
+                            Current weather
+                        </span>
+
+
+                        <span class="live">
+
+                            <i></i>
+
+                            Live
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="place-row">
+
+                        <div>
+
+                            <p class="place">
+
+                                Đà Nẵng
+
+                                <span aria-hidden="true">
+                                    ⌄
+                                </span>
+
+                            </p>
+
+
+                            <p class="date">
+                                Saturday, August 23
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="weather-icon sun-cloud"
+                            aria-label="Partly sunny"
+                        >
+                            <span></span>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="temperature-row">
+
+                        <strong>
+                            33°
+                        </strong>
+
+
+                        <div>
+
+                            <p>
+                                Feels like 37°
+                            </p>
+
+
+                            <p class="condition">
+                                Sunny, clear skies
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="metrics">
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ◌
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    Humidity
+                                </b>
+
+                                <strong>
+                                    62%
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ≋
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    Wind
+                                </b>
+
+                                <strong>
+                                    15 km/h
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ◒
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    UV index
+                                </b>
+
+                                <strong>
+                                    Very High
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="hourly-heading">
+
+                        <span>
+                            Today
+                        </span>
+
+
+                        <a href="forecast.html">
+                            View details →
+                        </a>
+
+                    </div>
+
+
+
+                    <div class="hourly-list">
+
+                        <div>
+
+                            <span>
+                                14:00
+                            </span>
+
+                            <b class="mini-sun"></b>
+
+                            <strong>
+                                33°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                16:00
+                            </span>
+
+                            <b class="mini-sun"></b>
+
+                            <strong>
+                                32°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                18:00
+                            </span>
+
+                            <b class="mini-cloud"></b>
+
+                            <strong>
+                                30°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                20:00
+                            </span>
+
+                            <b class="mini-moon"></b>
+
+                            <strong>
+                                28°
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- ================= CARD 3 ================= -->
+
+                <article
+                    class="weather-card"
+                    data-city="TP. Hồ Chí Minh"
+                >
+
+                    <div class="card-topline">
+
+                        <span>
+                            Current weather
+                        </span>
+
+
+                        <span class="live">
+
+                            <i></i>
+
+                            Live
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="place-row">
+
+                        <div>
+
+                            <p class="place">
+
+                                TP. Hồ Chí Minh
+
+                                <span aria-hidden="true">
+                                    ⌄
+                                </span>
+
+                            </p>
+
+
+                            <p class="date">
+                                Saturday, August 23
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="weather-icon sun-cloud"
+                            aria-label="Cloudy"
+                        >
+                            <span></span>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="temperature-row">
+
+                        <strong>
+                            30°
+                        </strong>
+
+
+                        <div>
+
+                            <p>
+                                Feels like 34°
+                            </p>
+
+
+                            <p class="condition">
+                                Cloudy, chance of rain
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="metrics">
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ◌
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    Humidity
+                                </b>
+
+                                <strong>
+                                    76%
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ≋
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    Wind
+                                </b>
+
+                                <strong>
+                                    10 km/h
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ◒
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    UV index
+                                </b>
+
+                                <strong>
+                                    High
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="hourly-heading">
+
+                        <span>
+                            Today
+                        </span>
+
+
+                        <a href="forecast.html">
+                            View details →
+                        </a>
+
+                    </div>
+
+
+
+                    <div class="hourly-list">
+
+                        <div>
+
+                            <span>
+                                14:00
+                            </span>
+
+                            <b class="mini-cloud"></b>
+
+                            <strong>
+                                30°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                16:00
+                            </span>
+
+                            <b class="mini-rain"></b>
+
+                            <strong>
+                                29°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                18:00
+                            </span>
+
+                            <b class="mini-rain"></b>
+
+                            <strong>
+                                28°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                20:00
+                            </span>
+
+                            <b class="mini-moon"></b>
+
+                            <strong>
+                                27°
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- ================= CARD 4 ================= -->
+
+                <article
+                    class="weather-card"
+                    data-city="Tokyo"
+                >
+
+                    <div class="card-topline">
+
+                        <span>
+                            Current weather
+                        </span>
+
+
+                        <span class="live">
+
+                            <i></i>
+
+                            Live
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="place-row">
+
+                        <div>
+
+                            <p class="place">
+
+                                Tokyo
+
+                                <span aria-hidden="true">
+                                    ⌄
+                                </span>
+
+                            </p>
+
+
+                            <p class="date">
+                                Saturday, August 23
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="weather-icon sun-cloud"
+                            aria-label="Partly sunny"
+                        >
+                            <span></span>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="temperature-row">
+
+                        <strong>
+                            29°
+                        </strong>
+
+
+                        <div>
+
+                            <p>
+                                Feels like 32°
+                            </p>
+
+
+                            <p class="condition">
+                                Mostly cloudy, dry
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="metrics">
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ◌
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    Humidity
+                                </b>
+
+                                <strong>
+                                    58%
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ≋
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    Wind
+                                </b>
+
+                                <strong>
+                                    9 km/h
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="metric-icon">
+                                ◒
+                            </span>
+
+
+                            <p>
+
+                                <b>
+                                    UV index
+                                </b>
+
+                                <strong>
+                                    Moderate
+                                </strong>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="hourly-heading">
+
+                        <span>
+                            Today
+                        </span>
+
+
+                        <a href="forecast.html">
+                            View details →
+                        </a>
+
+                    </div>
+
+
+
+                    <div class="hourly-list">
+
+                        <div>
+
+                            <span>
+                                14:00
+                            </span>
+
+                            <b class="mini-sun"></b>
+
+                            <strong>
+                                29°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                16:00
+                            </span>
+
+                            <b class="mini-cloud"></b>
+
+                            <strong>
+                                28°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                18:00
+                            </span>
+
+                            <b class="mini-cloud"></b>
+
+                            <strong>
+                                26°
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                20:00
+                            </span>
+
+                            <b class="mini-moon"></b>
+
+                            <strong>
+                                25°
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+
+            <!-- ================= CAROUSEL CONTROLS ================= -->
+
+            <div class="carousel-controls">
+
+                <button
+                    type="button"
+                    class="carousel-prev"
+                    aria-label="Previous weather"
+                >
+                    ←
+                </button>
+
+
+                <span>
+
+                    <b id="carousel-current">
+                        01
+                    </b>
+
+                    <i></i>
+
+                    04
+
+                </span>
+
+
+                <button
+                    type="button"
+                    class="carousel-next"
+                    aria-label="Next weather"
+                >
+                    →
+                </button>
+
+            </div>
+
+
+
+            <!-- ================= TOMORROW FORECAST ================= -->
+
+            <div class="forecast-pill">
+
+                <span class="pill-icon">
+                    ✦
+                </span>
+
+
+                <div>
+
+                    <small>
+                        Forecast tomorrow
+                    </small>
+
+                    <strong>
+                        Light showers
+                    </strong>
+
+                </div>
+
+
+                <b>
+                    26° / 32°
+                </b>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="bottom-bar">
+
+        <p>
+
+            <span class="pulse"></span>
+
+            System operating normally
+
+        </p>
+
+
+        <div>
+
+            <span>
+                Last updated 13:42
+            </span>
+
+
+            <span class="footer-line"></span>
+
+
+            <span>
+                Forecast accuracy 96%
+            </span>
+
+        </div>
+
+    </footer>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Weather Forecast | Weather WeFo</title>
+
+    <link rel="stylesheet" href="forecast.css">
+</head>
+
+<body>
+
+    <div class="weather-shell">
+
+        <!-- ================= HEADER ================= -->
+
+        <header class="site-header">
+
+            <a class="brand" href="home.html" aria-label="Weather WeFo home">
+
+                <span class="brand-mark" aria-hidden="true">
+                    <span></span>
+                </span>
+
+                <span>Weather WeFo</span>
+
+            </a>
+
+
+            <nav class="main-nav" aria-label="Main navigation">
+
+                <a href="home.html">
+                    Today
+                </a>
+
+                <a class="active" href="forecast.html">
+                    Forecast
+                </a>
+
+                <a href="climate.html">
+                    Climate
+                </a>
+
+                <a href="map.html">
+                    Map
+                </a>
+
+            </nav>
+
+
+            <a class="login-button" href="login.html">
+                Login
+            </a>
+
+
+            <button class="location-button" type="button">
+
+                <span aria-hidden="true">
+                    ⌖
+                </span>
+
+                My Location
+
+            </button>
+
+        </header>
+
+
+        <!-- ================= MAIN ================= -->
+
+        <main id="top" class="page-shell">
+
+
+            <!-- ================= HERO ================= -->
+
+            <section
+                class="hero"
+                aria-labelledby="forecast-title"
+            >
+
+                <div class="hero-copy">
+
+                    <span class="eyebrow">
+                        Weekly Report
+                    </span>
+
+                    <h1 id="forecast-title">
+                        Weekly Weather Forecast
+                    </h1>
+
+                    <p>
+                        The week ahead, at a glance.
+                    </p>
+
+                </div>
+
+
+                <div class="hero-meta">
+
+                    <span>
+                        London, UK
+                    </span>
+
+                    <strong>
+                        30°
+                    </strong>
+
+                    <span>
+                        Mostly Cloudy
+                    </span>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ================= WEEKLY FORECAST ================= -->
+
+            <section
+                class="forecast-section"
+                id="forecast"
+                aria-labelledby="weekly-title"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-kicker">
+                            7-Day Forecast
+                        </span>
+
+                        <h2 id="weekly-title">
+                            Weather Forecast
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        class="unit-button"
+                        type="button"
+                    >
+                        °C
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="carousel-controls"
+                    aria-label="Weekly forecast controls"
+                >
+
+                    <button
+                        class="carousel-button"
+                        type="button"
+                        data-direction="prev"
+                        aria-label="Previous days"
+                    >
+                        ‹
+                    </button>
+
+                    <button
+                        class="carousel-button"
+                        type="button"
+                        data-direction="next"
+                        aria-label="Next days"
+                    >
+                        ›
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="forecast-grid"
+                    id="forecast-carousel"
+                >
+
+
+                    <!-- Wednesday -->
+
+                    <article class="forecast-card">
+
+                        <h3>
+                            WED
+                        </h3>
+
+                        <div class="weather-symbol">
+                            ⛈
+                        </div>
+
+                        <strong>
+                            30°
+                        </strong>
+
+                        <span>
+                            29°
+                        </span>
+
+                        <footer>
+                            RealFeel
+                            <b>
+                                25°
+                            </b>
+                        </footer>
+
+                    </article>
+
+
+                    <!-- Thursday -->
+
+                    <article class="forecast-card">
+
+                        <h3>
+                            THU
+                        </h3>
+
+                        <div class="weather-symbol">
+                            ☁
+                        </div>
+
+                        <strong>
+                            30°
+                        </strong>
+
+                        <span>
+                            29°
+                        </span>
+
+                        <footer>
+                            RealFeel
+                            <b>
+                                25°
+                            </b>
+                        </footer>
+
+                    </article>
+
+
+                    <!-- Friday -->
+
+                    <article class="forecast-card">
+
+                        <h3>
+                            FRI
+                        </h3>
+
+                        <div class="weather-symbol">
+                            ☀
+                        </div>
+
+                        <strong>
+                            30°
+                        </strong>
+
+                        <span>
+                            29°
+                        </span>
+
+                        <footer>
+                            RealFeel
+                            <b>
+                                25°
+                            </b>
+                        </footer>
+
+                    </article>
+
+
+                    <!-- Saturday -->
+
+                    <article class="forecast-card">
+
+                        <h3>
+                            SAT
+                        </h3>
+
+                        <div class="weather-symbol">
+                            ☀
+                        </div>
+
+                        <strong>
+                            30°
+                        </strong>
+
+                        <span>
+                            29°
+                        </span>
+
+                        <footer>
+                            RealFeel
+                            <b>
+                                25°
+                            </b>
+                        </footer>
+
+                    </article>
+
+
+                    <!-- Sunday -->
+
+                    <article class="forecast-card">
+
+                        <h3>
+                            SUN
+                        </h3>
+
+                        <div class="weather-symbol">
+                            ☁
+                        </div>
+
+                        <strong>
+                            30°
+                        </strong>
+
+                        <span>
+                            29°
+                        </span>
+
+                        <footer>
+                            RealFeel
+                            <b>
+                                25°
+                            </b>
+                        </footer>
+
+                    </article>
+
+
+                    <!-- Monday -->
+
+                    <article class="forecast-card">
+
+                        <h3>
+                            MON
+                        </h3>
+
+                        <div class="weather-symbol">
+                            ⛈
+                        </div>
+
+                        <strong>
+                            30°
+                        </strong>
+
+                        <span>
+                            29°
+                        </span>
+
+                        <footer>
+                            RealFeel
+                            <b>
+                                25°
+                            </b>
+                        </footer>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ================= HIGHLIGHTS ================= -->
+
+            <section
+                class="highlights"
+                id="insights"
+                aria-labelledby="highlights-title"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-kicker">
+                            Detailed Conditions
+                        </span>
+
+                        <h2 id="highlights-title">
+                            Tomorrow's Highlights
+                        </h2>
+
+                    </div>
+
+
+                    <div class="tabs">
+
+                        <button type="button">
+                            TODAY
+                        </button>
+
+                        <button
+                            class="selected"
+                            type="button"
+                        >
+                            TOMORROW
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="highlight-layout">
+
+
+                    <!-- ================= DAILY SUMMARY ================= -->
+
+                    <article class="daily-summary">
+
+                        <div class="summary-top">
+
+                            <div>
+
+                                <span class="weather-symbol small">
+                                    ☔
+                                </span>
+
+                                <strong>
+                                    London
+                                </strong>
+
+                                <small>
+                                    Hourly Weather
+                                </small>
+
+                            </div>
+
+                            <b>
+                                12°
+                            </b>
+
+                        </div>
+
+
+                        <hr>
+
+
+                        <div class="summary-items">
+
+                            <span>
+
+                                ☀
+
+                                <b>
+                                    Sunrise
+                                </b>
+
+                                <small>
+                                    5:45 am
+                                </small>
+
+                            </span>
+
+
+                            <span>
+
+                                ◒
+
+                                <b>
+                                    Sunset
+                                </b>
+
+                                <small>
+                                    6:45 pm
+                                </small>
+
+                            </span>
+
+
+                            <span>
+
+                                ♨
+
+                                <b>
+                                    Humidity
+                                </b>
+
+                                <small>
+                                    70%
+                                </small>
+
+                            </span>
+
+
+                            <span>
+
+                                ≋
+
+                                <b>
+                                    Wind Speed
+                                </b>
+
+                                <small>
+                                    8 km/h
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <hr>
+
+
+                        <div class="mini-days">
+
+                            <span>
+
+                                Sat
+
+                                <b>
+                                    ☀
+                                </b>
+
+                                <strong>
+                                    +30°
+                                </strong>
+
+                            </span>
+
+
+                            <span>
+
+                                Sun
+
+                                <b>
+                                    ☁
+                                </b>
+
+                                <strong>
+                                    +30°
+                                </strong>
+
+                            </span>
+
+
+                            <span>
+
+                                Mon
+
+                                <b>
+                                    ⛈
+                                </b>
+
+                                <strong>
+                                    +30°
+                                </strong>
+
+                            </span>
+
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- ================= METRICS ================= -->
+
+                    <div class="metric-grid">
+
+
+                        <article>
+
+                            <span>
+                                ☁
+                            </span>
+
+                            <h3>
+                                UV Index
+                            </h3>
+
+                            <b>
+                                123
+                            </b>
+
+                        </article>
+
+
+                        <article>
+
+                            <h3>
+                                Wind Speed
+                            </h3>
+
+                            <b>
+                                9.30
+                                <small>
+                                    km/h
+                                </small>
+                            </b>
+
+                        </article>
+
+
+                        <article>
+
+                            <h3>
+                                Sunrise &amp; Sunset
+                            </h3>
+
+                            <b>
+                                05:25 am
+                                <br>
+                                05:35 pm
+                            </b>
+
+                        </article>
+
+
+                        <article>
+
+                            <h3>
+                                Humidity
+                            </h3>
+
+                            <b>
+                                85
+                                <small>
+                                    %
+                                </small>
+                            </b>
+
+                        </article>
+
+
+                        <article>
+
+                            <h3>
+                                Visibility
+                            </h3>
+
+                            <b>
+                                9.5
+                                <small>
+                                    km
+                                </small>
+                            </b>
+
+                        </article>
+
+
+                        <article>
+
+                            <h3>
+                                Air Speed
+                            </h3>
+
+                            <b>
+                                120
+                            </b>
+
+                        </article>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ================= MAP PLACEHOLDER ================= -->
+
+            <section
+                class="map-section"
+                id="map"
+                aria-labelledby="map-title"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-kicker">
+                            Weather Map
+                        </span>
+
+                        <h2 id="map-title">
+                            Weather Around You
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="map-placeholder">
+
+                    <span>
+                        Weather Map
+                    </span>
+
+                    <small>
+                        Map integration coming soon
+                    </small>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+
+        <!-- ================= BACK TO TOP ================= -->
+
+        <button
+            class="back-top"
+            type="button"
+            aria-label="Back to top"
+        >
+            ↑
+        </button>
+
+    </div>
+</body>
+
+</html>
