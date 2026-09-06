@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeFo | Profile</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+
+<body>
+    <div class="weather-shell">
+        <header class="site-header">
+            <a class="brand" href="home.html" aria-label="Weather WeFo home">
+                <span class="brand-mark" aria-hidden="true"><span></span></span>
+                <span>WeFo</span>
+            </a>
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="home.html">Today</a>
+                <a href="forecast.html">Forecast</a>
+                <a class="active" href="profile.html">Profile</a>
+                <a href="map.html">Map</a>
+            </nav>
+            <a class="login-button" href="login.html">Login</a>
+            <button class="location-button" type="button">
+                <span aria-hidden="true">⌖</span>
+                My Location
+            </button>
+        </header>
+        <main class="page">
+            <div class="layout">
+                <section id="profile">
+                    <article class="profile-card">
+                        <div class="profile-head">
+                            <div>
+                                <h2>Account details</h2><span class="status">WeFo member</span>
+                            </div>
+                        </div>
+                        <div class="details">
+                            <div><span class="label">Full name</span><span class="value">Nguyễn Minh Anh</span></div>
+                            <div><span class="label">Email address</span><span class="value">minhanh@example.com</span></div>
+                            <div><span class="label">Password</span><span class="value">••••••••</span></div>
+                            <div><span class="label">Birthday</span><span class="value">August 12, 2000</span></div>
+                            <div><span class="label">Gender</span><span class="value">Female</span></div>
+                            <button class="edit-button" type="button">Edit profile</button>
+                        </div>
+                    </article>
+                </section>
+                <aside id="premium" class="premium-card">
+                    <p class="eyebrow">Go further</p>
+                    <h2>Unlock the Premium experience.</h2>
+                    <p class="premium-copy">More inspiration, more connections, and a space made entirely for you.</p>
+                    <ul class="benefits">
+                        <li>Access all exclusive content</li>
+                        <li>Ad-free experience</li>
+                        <li>Priority support from WeFo</li>
+                    </ul>
+                    <div class="price-row">
+                        <div class="price">49,000 VND <small>/ month</small></div><button id="premiumButton"
+                            type="button">Get Premium</button>
+                    </div>
+                    <p id="premiumNote" class="note" role="status"></p>
+                </aside>
+            </div>
+        </main>
+    </div>
+    <script>document.getElementById('premiumButton').addEventListener('click', function () { this.textContent = 'Activated'; this.disabled = true; document.getElementById('premiumNote').textContent = 'Premium has been activated for your account.'; });</script>
+
+</body>
+
+</html>

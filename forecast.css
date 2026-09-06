@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 
 /* =========================================================
@@ -49,10 +49,7 @@ body {
 
     color: var(--white);
 
-    font-family:
-        Inter,
-        Arial,
-        sans-serif;
+    font-family: Inter, sans-serif;
 
     background:
         linear-gradient(
@@ -111,7 +108,7 @@ body {
     gap: 10px;
     flex: 0 0 auto;
     color: var(--cream);
-    font-family: Arial, sans-serif;
+    font-family: Inter, sans-serif;
     font-size: 20px;
     font-weight: 800;
     letter-spacing: .04em;
@@ -251,6 +248,7 @@ body {
     background: var(--mint);
     font-size: 12px;
     font-weight: 700;
+    text-decoration: none;
     white-space: nowrap;
     transition: background .2s ease, transform .2s ease;
 }
@@ -280,6 +278,7 @@ body {
     border-radius: 999px;
     color: var(--cream);
     background: rgba(255, 255, 255, .10);
+    font-family: inherit;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -388,7 +387,7 @@ body {
 h2 {
 
     font-family:
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
     line-height: 1;
@@ -437,7 +436,7 @@ h2 {
 
     font:
         600 58px
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
     line-height: 1;
@@ -642,7 +641,7 @@ h2 {
 
     font:
         600 18px
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
     letter-spacing: .7px;
@@ -686,7 +685,7 @@ h2 {
 
     font:
         600 17px
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
 }
@@ -846,7 +845,7 @@ h2 {
 
     font:
         600 40px
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
 }
@@ -948,7 +947,7 @@ h2 {
 
     font:
         600 15px
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
 }
@@ -1046,7 +1045,7 @@ h2 {
 
     font:
         600 20px
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
 }
@@ -1056,7 +1055,7 @@ h2 {
 
     font:
         600 27px
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
 }
@@ -1115,7 +1114,7 @@ h2 {
 
     font:
         600 30px
-        'Barlow Condensed',
+        Inter,
         sans-serif;
 
 }

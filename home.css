@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 /* =========================================================
    WEATHER WEFO — HOME.CSS
 
@@ -35,7 +37,7 @@ body {
     min-width: 320px;
     background: var(--navy);
     color: var(--paper);
-    font-family: Arial, sans-serif;
+    font-family: Inter, sans-serif;
 }
 
 button,
@@ -220,7 +222,7 @@ button {
     gap: 10px;
     flex: 0 0 auto;
     color: var(--paper);
-    font-family: Arial, sans-serif;
+    font-family: Inter, sans-serif;
     font-size: 20px;
     font-weight: 800;
     letter-spacing: .04em;
@@ -345,8 +347,10 @@ button {
     border-radius: 999px;
     color: var(--paper);
     background: rgba(255, 255, 255, .10);
+    font-family: inherit;
     font-size: 12px;
     font-weight: 700;
+    cursor: pointer;
     white-space: nowrap;
     transition:
         background .2s ease,
@@ -358,6 +362,10 @@ button {
     border-color: rgba(124, 213, 199, .65);
     background: rgba(124, 213, 199, .20);
     transform: translateY(-1px);
+}
+
+.location-button span {
+    font-size: 16px;
 }
 
 
@@ -447,7 +455,7 @@ button {
     max-width: 680px;
     margin: 0;
     color: var(--paper);
-    font-family: Arial, sans-serif;
+    font-family: Inter, sans-serif;
     font-size: clamp(54px, 6.4vw, 88px);
     font-weight: 800;
     line-height: .95;
@@ -696,7 +704,7 @@ button {
 .place {
     margin: 0;
     color: var(--ink);
-    font-family: Arial, sans-serif;
+    font-family: Inter, sans-serif;
     font-size: 29px;
     font-weight: 800;
     letter-spacing: -.05em;
@@ -776,7 +784,7 @@ button {
 .temperature-row > strong {
     flex: 0 0 auto;
     color: var(--ink);
-    font-family: Arial, sans-serif;
+    font-family: Inter, sans-serif;
     font-size: 78px;
     font-weight: 800;
     line-height: .8;

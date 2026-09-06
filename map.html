@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeFo | Map</title>
+    <link rel="stylesheet" href="map.css">
+</head>
+
+<body>
+    <div class="weather-shell">
+        <header class="site-header">
+                <a class="brand" href="home.html" aria-label="Weather WeFo home"><span class="brand-mark"
+                    aria-hidden="true"><span></span></span><span>WeFo</span></a>
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="home.html">Today</a><a href="forecast.html">Forecast</a><a href="profile.html">Profile</a><a
+                    class="active" href="map.html">Map</a>
+            </nav>
+            <a class="login-button" href="login.html">Login</a>
+            <button class="location-button" type="button" id="location-button">
+                <span aria-hidden="true">⌖</span>
+                My Location
+            </button>
+        </header>
+
+        <main>
+            <section class="intro" aria-labelledby="map-title">
+                <div>
+                    <p class="eyebrow">Visual weather data</p>
+                    <h1 id="map-title">Weather <em>map</em></h1>
+                </div>
+                <p class="intro-copy">Explore conditions across Vietnam at a glance — simple, clear, and easy to
+                    understand.</p>
+            </section>
+
+            <div class="map-layout">
+                <section class="map-card" aria-label="Bản đồ thời tiết Việt Nam">
+                    <div class="map-toolbar">
+                        <div class="map-title">Live weather map <span>· Vietnam</span></div>
+                        <label class="map-search">
+                            <span aria-hidden="true">⌕</span>
+                            <input class="search" type="search" placeholder="Search city..." aria-label="Search city">
+                        </label>
+                    </div>
+                    <div class="map-art" aria-hidden="true">
+                        <div class="grid-lines"></div>
+                        <div class="land one"></div>
+                        <div class="land two"></div>
+                        <div class="land three"></div>
+                        <div class="route one"></div>
+                        <div class="route two"></div>
+                        <span class="pin hanoi"></span><span class="pin danang"></span><span class="pin hcm"></span>
+                        <span class="map-label label-hanoi">Hà Nội · 31°</span><span class="map-label label-danang">Đà
+                            Nẵng · 33°</span><span class="map-label label-hcm">TP. HCM · 30°</span>
+                        <div class="legend"><span><i class="clear"></i>Clear</span><span><i
+                                    class="cloud"></i>Cloudy</span><span><i class="rain"></i>Rain</span></div>
+                    </div>
+                </section>
+
+                <aside class="side-stack" aria-label="Thông tin thời tiết">
+                    <section class="side-card">
+                        <h2>Selected cities</h2>
+                        <div class="city"><i class="weather-dot sun"></i>
+                            <div class="city-info"><span class="city-name">Hà Nội</span><span
+                                    class="city-condition">Partly sunny</span></div><strong class="degree">31°</strong>
+                        </div>
+                        <div class="city"><i class="weather-dot sun"></i>
+                            <div class="city-info"><span class="city-name">Đà Nẵng</span><span
+                                    class="city-condition">Clear skies</span></div><strong class="degree">33°</strong>
+                        </div>
+                        <div class="city"><i class="weather-dot rain"></i>
+                            <div class="city-info"><span class="city-name">TP. Hồ Chí Minh</span><span
+                                    class="city-condition">Chance of rain</span></div><strong
+                                class="degree">30°</strong>
+                        </div>
+                    </section>
+                    <section class="side-card">
+                        <h2>Temperature scale</h2>
+                        <div class="scale"></div>
+                        <div class="scale-labels"><span>20°</span><span>25°</span><span>30°</span><span>35°</span></div>
+                        <p class="note">Updated a few moments ago. Tap a city to see its local forecast.</p>
+                    </section>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+
+</body>
+
+</html>
