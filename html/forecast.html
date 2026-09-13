@@ -7,7 +7,7 @@
 
     <title>WeFo | Weather Forecast</title>
 
-    <link rel="stylesheet" href="forecast.css">
+    <link rel="stylesheet" href="../css/forecast.css">
 </head>
 
 <body>
@@ -18,7 +18,7 @@
 
         <header class="site-header">
 
-            <a class="brand" href="home.html" aria-label="Weather WeFo home">
+            <a class="brand" href="../index.html" aria-label="Weather WeFo home">
 
                 <span class="brand-mark" aria-hidden="true">
                     <span></span>
@@ -31,7 +31,7 @@
 
             <nav class="main-nav" aria-label="Main navigation">
 
-                <a href="home.html">
+                <a href="../index.html">
                     Today
                 </a>
 
@@ -681,6 +681,13 @@
         </button>
 
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
+            integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-firestore-compat.min.js"></script>        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-storage-compat.min.js"></script>
+    <script src="../js/firebase_config.js"></script>
 </body>
 
 </html>

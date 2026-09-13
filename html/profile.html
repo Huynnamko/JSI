@@ -5,18 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Profile</title>
-    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="../css/profile.css">
 </head>
 
 <body>
     <div class="weather-shell">
         <header class="site-header">
-            <a class="brand" href="home.html" aria-label="Weather WeFo home">
+            <a class="brand" href="../index.html" aria-label="Weather WeFo home">
                 <span class="brand-mark" aria-hidden="true"><span></span></span>
                 <span>WeFo</span>
             </a>
             <nav class="main-nav" aria-label="Main navigation">
-                <a href="home.html">Today</a>
+                <a href="../index.html">Today</a>
                 <a href="forecast.html">Forecast</a>
                 <a class="active" href="profile.html">Profile</a>
                 <a href="map.html">Map</a>
@@ -65,7 +65,13 @@
         </main>
     </div>
     <script>document.getElementById('premiumButton').addEventListener('click', function () { this.textContent = 'Activated'; this.disabled = true; document.getElementById('premiumNote').textContent = 'Premium has been activated for your account.'; });</script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
+            integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-firestore-compat.min.js"></script>        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-storage-compat.min.js"></script>
+    <script src="../js/firebase_config.js"></script>
 </body>
 
 </html>

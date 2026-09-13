@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeFo | Login</title>
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="icon" href="../images/weather icon.png">
+</head>
+
+<body>
+    <!-- LOGIN CARD -->
+    <div class="card">
+        <div class="form-container">
+            <h2>Login</h2>
+            <form id="login-form" class="form">
+
+                <div class="field">
+                    <label for="txt_email">Email Address</label>
+                    <input id="txt_email" class="inp-email" type="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="field">
+                    <label for="txt_password">Password</label>
+                    <input id="txt_password" class="inp-pwd" type="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="login-btn">Login</button>
+                </div>
+
+                <div class="social-divider"><span>or</span></div>
+
+                <button id="google-login" type="button" class="google-btn">
+                    <span aria-hidden="true">G</span>
+                    Continue with Google
+                </button>
+
+            </form>
+
+            <div class="register-link">
+                <p>Don't have an account? <a href="register.html">Register here</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
+            integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-firestore-compat.min.js"></script>        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-storage-compat.min.js"></script>
+    <script src="../js/firebase_config.js"></script>
+    <script src="../js/login.js"></script>
+</body>
+
+</html>

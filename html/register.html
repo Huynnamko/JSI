@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Register</title>
-    <link rel="stylesheet" href="register.css">
-    <link rel="icon" href="images/weather icon.png">
+    <link rel="stylesheet" href="../css/register.css">
+    <link rel="icon" href="../images/weather icon.png">
 </head>
 
 <body>
@@ -14,36 +14,36 @@
     <div class="card">
         <div class="form-container">
             <h2>Register</h2>
-            <form id="registerForm" class="form">
+            <form id="register-form" class="form">
 
                 <div class="field">
                     <label for="txt_name">Full Name</label>
-                    <input id="txt_name" type="text" placeholder="Enter your full name" required>
+                    <input id="txt_name" class="inp-username" type="text" placeholder="Enter your full name" required>
                 </div>
 
                 <div class="field">
                     <label for="txt_email">Email Address</label>
-                    <input id="txt_email" type="email" placeholder="Enter your email" required>
+                    <input id="txt_email" class="inp-email" type="email" placeholder="Enter your email" required>
                 </div>
 
                 <div class="field">
                     <label for="txt_password">Password</label>
-                    <input id="txt_password" type="password" placeholder="Enter your password" required>
+                    <input id="txt_password" class="inp-pwd" type="password" placeholder="Enter your password" required>
                 </div>
 
                 <div class="field">
                     <label for="txt_confirm_password">Confirm Password</label>
-                    <input id="txt_confirm_password" type="password" placeholder="Confirm your password" required>
+                    <input id="txt_confirm_password" class="inp-cf-pw" type="password" placeholder="Confirm your password" required>
                 </div>
 
                 <div class="field">
                     <label for="txt_birthday">Birthday</label>
-                    <input id="txt_birthday" type="date" required>
+                    <input id="txt_birthday" class="inp-birthday" type="date" required>
                 </div>
 
                 <div class="field">
                     <label for="txt_gender">Gender</label>
-                    <select id="txt_gender" required>
+                    <select id="txt_gender" class="inp-gender" required>
                         <option value="">Select Gender</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -62,6 +62,14 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
+            integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-firestore-compat.min.js"></script>        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-storage-compat.min.js"></script>
+    <script src="../js/firebase_config.js"></script>
+    <script src="../js/register.js"></script>
 </body>
 
 </html>
