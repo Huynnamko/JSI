@@ -6,6 +6,27 @@ const loginForm = document.querySelector("#login-form");
 const now = new Date().getTime();
 const userSession = JSON.parse(localStorage.getItem("user_session") || "null");
 
+async function cacheProfile(user) {
+    const profileData = {
+        uid: user.uid,
+        username: user.displayName || "",
+        email: user.email || "",
+        birthday: "",
+        gender: ""
+    };
+
+    try {
+        const profileSnapshot = await db.collection("users").doc(user.uid).get();
+        if (profileSnapshot.exists) {
+            Object.assign(profileData, profileSnapshot.data());
+        }
+    } catch (error) {
+        console.error("Could not cache the profile:", error);
+    }
+
+    localStorage.setItem("profile_data", JSON.stringify(profileData));
+}
+
 if (now < userSession?.expiry) {
     window.location.href = "../index.html";
 }
@@ -24,7 +45,7 @@ function handleLogin(event) {
 
     // Đăng nhập với Firebase Auth
     firebase.auth().signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
+        .then(async (userCredential) => {
             // Signed in
             var user = userCredential.user;
             alert("Đăng nhập thành công");
@@ -35,6 +56,7 @@ function handleLogin(event) {
             };
 
             localStorage.setItem("user_session", JSON.stringify(userSession));
+            await cacheProfile(user);
 
             // Chuyển hướng tới trang chủ
             window.location.href = "../index.html";
@@ -55,7 +77,7 @@ if (googleLoginBtn) {
     googleLoginBtn.addEventListener('click', function() {
         const provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider)
-            .then((result) => {
+            .then(async (result) => {
                 const user = result.user;
                 alert("Đăng nhập Google thành công");
 
@@ -65,6 +87,7 @@ if (googleLoginBtn) {
                 };
 
                 localStorage.setItem("user_session", JSON.stringify(userSession));
+                await cacheProfile(user);
                 window.location.href = "../index.html";
             })
             .catch((error) => {

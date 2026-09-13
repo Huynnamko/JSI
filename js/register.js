@@ -40,7 +40,10 @@ function handleRegister(event) {
                 balance: 0
             };
 
-            db.collection("users").doc(user.uid).set(userData)
+            localStorage.setItem("profile_data", JSON.stringify(userData));
+
+            user.updateProfile({ displayName: username })
+                .then(() => db.collection("users").doc(user.uid).set(userData))
                 .then(() => {
                     alert("Đăng ký thành công");
                     window.location.href = "login.html";

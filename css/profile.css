@@ -258,6 +258,29 @@ h1 {
     transition: box-shadow .2s ease, transform .2s ease, filter .2s ease;
 }
 
+.profile-actions {
+    display: flex;
+    gap: 12px;
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+}
+
+.profile-actions .edit-button {
+    grid-column: auto;
+}
+
+.logout-button {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--navy);
+}
+
+.logout-button:hover {
+    background: rgba(70, 75, 113, .08);
+    border-color: var(--navy);
+    filter: none;
+}
+
 .edit-button:hover {
     background: linear-gradient(135deg, var(--blue), var(--navy));
     box-shadow: 0 11px 24px rgba(29, 43, 78, .26);
@@ -325,6 +348,20 @@ h2 {
     color: var(--ink);
     font-size: 15px;
     font-weight: 600;
+}
+
+.profile-input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    font: inherit;
+    padding: 8px 10px;
+}
+
+.profile-input:focus {
+    border-color: var(--blue);
+    outline: 3px solid rgba(17, 138, 178, .18);
 }
 
 .premium-card {
