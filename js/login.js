@@ -7,7 +7,7 @@ const now = new Date().getTime();
 const userSession = JSON.parse(localStorage.getItem("user_session") || "null");
 
 async function cacheProfile(user) {
-    const profileData = {
+    let profileData = {
         uid: user.uid,
         username: user.displayName || "",
         email: user.email || "",
@@ -16,9 +16,14 @@ async function cacheProfile(user) {
     };
 
     try {
+        const cachedProfile = JSON.parse(localStorage.getItem("profile_data") || "null");
+        if (cachedProfile?.uid === user.uid) {
+            profileData = { ...profileData, ...cachedProfile };
+        }
+
         const profileSnapshot = await db.collection("users").doc(user.uid).get();
         if (profileSnapshot.exists) {
-            Object.assign(profileData, profileSnapshot.data());
+            profileData = { ...profileData, ...profileSnapshot.data() };
         }
     } catch (error) {
         console.error("Could not cache the profile:", error);

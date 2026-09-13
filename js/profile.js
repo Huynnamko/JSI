@@ -26,6 +26,20 @@ function displayValue(value) {
 	return value || "Not provided";
 }
 
+function formatBirthday(value) {
+	if (!value) {
+		return "Not provided";
+	}
+
+	const parts = value.split("-");
+	if (parts.length !== 3) {
+		return value;
+	}
+
+	const [year, month, day] = parts;
+	return `${day}/${month}/${year}`;
+}
+
 function getCachedProfile(uid) {
 	try {
 		const cachedProfile = JSON.parse(localStorage.getItem("profile_data") || "null");
@@ -51,7 +65,7 @@ function renderStoredSession() {
 		const cachedProfile = getCachedProfile(storedUser.uid);
 		profileData = {
 			...cachedProfile,
-			username: cachedProfile.username || storedUser.displayName || storedUser.email || "User",
+			username: cachedProfile.username || storedUser.displayName || "",
 			email: cachedProfile.email || storedUser.email || "",
 			birthday: cachedProfile.birthday || "",
 			gender: cachedProfile.gender || "",
@@ -67,7 +81,7 @@ function renderProfile(data) {
 	profileName.textContent = displayValue(data.username);
 	profileEmail.textContent = displayValue(data.email);
 	profilePassword.textContent = data.isGoogleAccount ? "Managed by Google" : "********";
-	profileBirthday.textContent = displayValue(data.birthday);
+	profileBirthday.textContent = formatBirthday(data.birthday);
 	profileGender.textContent = displayValue(data.gender);
 
 	if (profileStatus) {
@@ -80,7 +94,7 @@ async function loadProfile(user) {
 		(provider) => provider.providerId === "google.com"
 	);
 	const authProfile = {
-		username: user.displayName || "Google user",
+		username: user.displayName || "",
 		email: user.email || "",
 		birthday: "",
 		gender: "",
@@ -91,7 +105,9 @@ async function loadProfile(user) {
 
 	try {
 		const profileSnapshot = await db.collection("users").doc(user.uid).get();
-		savedProfile = profileSnapshot.exists ? profileSnapshot.data() : {};
+		if (profileSnapshot.exists) {
+			savedProfile = { ...savedProfile, ...profileSnapshot.data() };
+		}
 	} catch (error) {
 		console.error("Could not load the Firestore profile:", error);
 	}
