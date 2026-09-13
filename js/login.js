@@ -19,6 +19,10 @@ async function cacheProfile(user) {
         const cachedProfile = JSON.parse(localStorage.getItem("profile_data") || "null");
         if (cachedProfile?.uid === user.uid) {
             profileData = { ...profileData, ...cachedProfile };
+
+            if (profileData.username && profileData.birthday && profileData.gender) {
+                return;
+            }
         }
 
         const profileSnapshot = await db.collection("users").doc(user.uid).get();
@@ -53,17 +57,14 @@ function handleLogin(event) {
         .then(async (userCredential) => {
             // Signed in
             var user = userCredential.user;
-            alert("Đăng nhập thành công");
-
             const userSession = {
                 user,
                 expiry: new Date().getTime() + 2 * 60 * 60 * 1000
             };
 
             localStorage.setItem("user_session", JSON.stringify(userSession));
-            await cacheProfile(user);
+            void cacheProfile(user);
 
-            // Chuyển hướng tới trang chủ
             window.location.href = "../index.html";
         })
         .catch((error) => {
@@ -84,15 +85,13 @@ if (googleLoginBtn) {
         firebase.auth().signInWithPopup(provider)
             .then(async (result) => {
                 const user = result.user;
-                alert("Đăng nhập Google thành công");
-
                 const userSession = {
                     user,
                     expiry: new Date().getTime() + 2 * 60 * 60 * 1000
                 };
 
                 localStorage.setItem("user_session", JSON.stringify(userSession));
-                await cacheProfile(user);
+                void cacheProfile(user);
                 window.location.href = "../index.html";
             })
             .catch((error) => {
