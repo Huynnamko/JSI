@@ -456,7 +456,7 @@ h2 {
 
     align-items: flex-end;
 
-    gap: 20px;
+    gap: 24px;
 
     margin-bottom: 26px;
 
@@ -468,7 +468,22 @@ h2 {
     margin:
         8px 0 0;
 
-    font-size: 40px;
+    font-size: clamp(34px, 4vw, 60px);
+
+    line-height: 0.96;
+
+}
+
+
+.forecast-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    margin-left: auto;
 
 }
 
@@ -487,11 +502,17 @@ h2 {
 
     font-weight: 700;
 
-    padding: 11px 17px;
+    padding: 12px 18px;
 
-    border-radius: 5px;
+    border-radius: 10px;
 
     cursor: pointer;
+
+    min-width: 56px;
+
+    min-height: 52px;
+
+    font-size: 22px;
 
 }
 
@@ -506,17 +527,17 @@ h2 {
 
     justify-content: flex-end;
 
-    gap: 8px;
+    align-items: center;
 
-    margin-bottom: 14px;
+    gap: 10px;
 
 }
 
 
 .carousel-button {
 
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
 
     border:
         1px solid
@@ -562,6 +583,10 @@ h2 {
 
     display: flex;
 
+    justify-content: center;
+
+    align-items: stretch;
+
     gap: 20px;
 
     overflow-x: auto;
@@ -589,11 +614,11 @@ h2 {
 
 .forecast-card {
 
-    flex:
-        0 0
-        calc((100% - 100px) / 6);
+    flex: 0 0 180px;
 
     min-width: 150px;
+
+    max-width: 180px;
 
     scroll-snap-align: start;
 
@@ -655,13 +680,24 @@ h2 {
         25px 0
         18px;
 
+    display: inline-block;
     color: var(--yellow-light);
-
     font-size: 47px;
-
+    line-height: 1;
     text-shadow:
         0 3px 0 rgba(70, 75, 113, .2);
 
+}
+
+.weather-symbol.wi {
+    font-family: "weathericons";
+}
+
+.summary-top .weather-symbol,
+.mini-days .wi {
+    display: inline-block;
+    line-height: 1;
+    font-family: "weathericons";
 }
 
 

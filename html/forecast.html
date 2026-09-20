@@ -7,6 +7,7 @@
 
     <title>WeFo | Weather Forecast</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weathericons/2.0.10/css/weather-icons.min.css">
     <link rel="stylesheet" href="../css/forecast.css">
     <script src="../js/check_session.js"></script>
 </head>
@@ -130,49 +131,15 @@
 
                     <div>
 
-                        <span class="section-kicker">
-                            7-Day Forecast
+                        <span class="section-kicker" style="display:none;">
+                            5-Day Forecast
                         </span>
 
-                        <h2 id="weekly-title">
+                        <h2 id="weekly-title" style="display:none;">
                             Weather Forecast
                         </h2>
 
                     </div>
-
-
-                    <button
-                        class="unit-button"
-                        type="button"
-                    >
-                        °C
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="carousel-controls"
-                    aria-label="Weekly forecast controls"
-                >
-
-                    <button
-                        class="carousel-button"
-                        type="button"
-                        data-direction="prev"
-                        aria-label="Previous days"
-                    >
-                        ‹
-                    </button>
-
-                    <button
-                        class="carousel-button"
-                        type="button"
-                        data-direction="next"
-                        aria-label="Next days"
-                    >
-                        ›
-                    </button>
 
                 </div>
 
@@ -332,35 +299,6 @@
 
                     </article>
 
-
-                    <!-- Monday -->
-
-                    <article class="forecast-card">
-
-                        <h3>
-                            MON
-                        </h3>
-
-                        <div class="weather-symbol">
-                            ⛈
-                        </div>
-
-                        <strong>
-                            30°
-                        </strong>
-
-                        <span>
-                            29°
-                        </span>
-
-                        <footer>
-                            RealFeel
-                            <b>
-                                25°
-                            </b>
-                        </footer>
-
-                    </article>
 
                 </div>
 
@@ -689,6 +627,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-firestore-compat.min.js"></script>        
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-storage-compat.min.js"></script>
     <script src="../js/firebase_config.js"></script>
+    <script src="../js/forcecast.js"></script>
 </body>
 
 </html>
