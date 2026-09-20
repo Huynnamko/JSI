@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentDisplay = document.getElementById('carousel-current');
     const searchForm = document.getElementById('search-form');
     const searchInput = document.getElementById('city');
+    const searchStatus = document.getElementById('search-status');
     const quickCityButtons = Array.from(document.querySelectorAll('.quick-cities button'));
 
     if (!cards.length) {
@@ -51,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.transform = getCardTransform(distance);
             card.style.opacity = String(getCardOpacity(distance));
             card.style.filter = `brightness(${getCardBrightness(distance)})`;
-            card.style.zIndex = String(cards.length - Math.abs(distance));
+            card.style.zIndex = isActive ? '20' : String(cards.length - Math.abs(distance));
             card.style.pointerEvents = isActive ? 'auto' : 'none';
         });
 
@@ -78,13 +79,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cards.forEach((card) => {
         let startX = 0;
+        let isPointerTracking = false;
 
         card.addEventListener('pointerdown', (event) => {
+            if (event.target.closest('a, button, input')) {
+                isPointerTracking = false;
+                return;
+            }
+
             startX = event.clientX;
+            isPointerTracking = true;
             card.setPointerCapture(event.pointerId);
         });
 
         card.addEventListener('pointerup', (event) => {
+            if (!isPointerTracking) {
+                return;
+            }
+
+            isPointerTracking = false;
             const deltaX = event.clientX - startX;
 
             if (Math.abs(deltaX) > 40) {
@@ -214,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchWeatherData = async (city) => {
         if (!ensureApiKey()) {
-            return null;
+            return { error: 'service' };
         }
 
         try {
@@ -226,8 +239,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch(forecastUrl)
             ]);
 
-            if (!weatherRes.ok || !forecastRes.ok) {
-                throw new Error('Không thể tải dữ liệu thời tiết.');
+            if (!weatherRes.ok) {
+                return { error: weatherRes.status === 404 ? 'not-found' : 'service' };
+            }
+
+            if (!forecastRes.ok) {
+                return { error: 'service' };
             }
 
             const weatherData = await weatherRes.json();
@@ -235,18 +252,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return { weather: weatherData, forecast: forecastData };
         } catch (error) {
             console.error(error);
-            return null;
+            return { error: 'service' };
         }
     };
 
     const loadCityWeather = async (city) => {
         const resolvedCity = city || defaultCity;
-        localStorage.setItem('wefo-selected-city', resolvedCity);
 
         const data = await fetchWeatherData(resolvedCity);
 
-        if (!data) {
+        if (!data || data.error) {
+            if (searchStatus) {
+                searchStatus.textContent = data?.error === 'not-found'
+                    ? `Không tìm thấy thành phố "${resolvedCity}".`
+                    : 'Không thể tải dữ liệu thời tiết lúc này.';
+            }
             return;
+        }
+
+        localStorage.setItem('wefo-selected-city', resolvedCity);
+
+        if (searchStatus) {
+            searchStatus.textContent = '';
         }
 
         const activeCard = cards[activeIndex] || cards[0];

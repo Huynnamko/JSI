@@ -49,6 +49,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date);
     };
 
+    const getDateMonthLabel = (dateKey) => new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric'
+    }).format(new Date(`${dateKey}T12:00:00`));
+
+    const getSummaryDateLabel = (target, mode) => {
+        const date = target?.dt_txt
+            ? new Date(target.dt_txt.replace(' ', 'T'))
+            : new Date();
+        const dateLabel = new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            day: 'numeric'
+        }).format(date);
+
+        return `${mode === 'today' ? 'Today' : 'Tomorrow'} · ${dateLabel}`;
+    };
+
     const setText = (selector, text) => {
         const node = document.querySelector(selector);
         if (node) {
@@ -142,21 +159,30 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.display = '';
 
             const weather = pick.weather?.[0];
-            const temp = pick.main?.temp ?? 0;
-            const low = pick.main?.temp_min ?? 0;
-            const high = pick.main?.temp_max ?? 0;
+            const temperatures = items.map((item) => item.main?.temp ?? 0);
+            const high = Math.max(...temperatures);
+            const low = Math.min(...temperatures);
+            const feelsLike = pick.main?.feels_like ?? pick.main?.temp ?? 0;
             const iconNode = card.querySelector('.weather-symbol');
             const iconClass = getWeatherIconClass(weather?.main || 'Clear', true);
+            const dayNode = card.querySelector('.forecast-day');
+            const dateNode = card.querySelector('.forecast-date');
 
-            card.querySelector('h3').textContent = getDateLabel(dateKey);
+            if (dayNode) {
+                dayNode.textContent = getDateLabel(dateKey);
+            }
+            if (dateNode) {
+                dateNode.dateTime = dateKey;
+                dateNode.textContent = getDateMonthLabel(dateKey);
+            }
             if (iconNode) {
                 iconNode.className = `weather-symbol wi ${iconClass}`;
                 iconNode.style.fontSize = '30px';
                 iconNode.style.color = '#f6b84d';
             }
-            card.querySelector('strong').textContent = formatTemp(temp);
-            card.querySelector('span').textContent = formatTemp(low);
-            card.querySelector('footer b').textContent = formatTemp(high);
+            card.querySelector('strong').textContent = formatTemp(high);
+            card.querySelector(':scope > span').textContent = formatTemp(low);
+            card.querySelector('footer b').textContent = formatTemp(feelsLike);
         });
     };
 
@@ -203,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (summaryTitle) summaryTitle.textContent = cityName;
         if (summaryTemp) summaryTemp.textContent = formatTemp(tempValue);
-        if (summaryCity) summaryCity.textContent = mode === 'today' ? 'Today' : 'Tomorrow';
+        if (summaryCity) summaryCity.textContent = getSummaryDateLabel(target, mode);
         if (highlightsTitle) highlightsTitle.textContent = mode === 'today' ? "Today's Highlights" : "Tomorrow's Highlights";
 
         const summaryItems = document.querySelectorAll('.summary-items span');
@@ -217,30 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryItems[3].innerHTML = `<span style="font-size:22px;">≋</span><b>Wind</b><small>${wind}</small>`;
         }
 
-        const miniDays = document.querySelectorAll('.mini-days span');
-        const todayKey = new Date().toISOString().split('T')[0];
-        const nextDays = forecast?.list ? forecast.list.reduce((acc, item) => {
-            const dateKey = item.dt_txt.split(' ')[0];
-            if (!acc.some((entry) => entry.dateKey === dateKey) && dateKey !== todayKey) {
-                acc.push({ dateKey, item });
-            }
-            return acc;
-        }, []).slice(0, 3) : [];
-
-        miniDays.forEach((node, index) => {
-            const targetDay = nextDays[index]?.item;
-            if (!targetDay) {
-                node.style.opacity = '0.5';
-                return;
-            }
-
-            const date = new Date(targetDay.dt_txt);
-            node.innerHTML = `
-                ${date.toLocaleDateString(undefined, { weekday: 'short' })}
-                <b class="wi ${getWeatherIconClass(targetDay.weather?.[0]?.main || 'Clear', true)}"></b>
-                <strong>${formatTemp(targetDay.main?.temp ?? 0)}</strong>
-            `;
-        });
     };
 
     const renderMetricGrid = (weather, forecast, mode = activeDayMode) => {
