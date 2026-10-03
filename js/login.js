@@ -48,11 +48,11 @@ function handleLogin(event) {
 
     // Kiểm tra các trường có trống không
     if (!email || !password) {
-        alert("Vui lòng điền đủ các trường");
+        alert("Please fill in all fields.");
         return;
     }
 
-    // Đăng nhập với Firebase Auth
+    // Sign in with Firebase Auth
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then(async (userCredential) => {
             // Signed in
@@ -70,7 +70,7 @@ function handleLogin(event) {
         .catch((error) => {
             var errorCode = error.code;
             var errorMessage = error.message;
-            alert("Mật khẩu không đúng");
+            alert("Incorrect password.");
         });
 
 }
@@ -95,7 +95,7 @@ if (googleLoginBtn) {
                 window.location.href = "../index.html";
             })
             .catch((error) => {
-                alert("Đăng nhập Google thất bại: " + error.message);
+                alert("Google sign-in failed: " + error.message);
             });
     });
 }

@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weathericons/2.0.10/css/weather-icons.min.css">
     <link rel="stylesheet" href="css/home.css">
     <script src="js/check_session.js"></script>
+    <script src="js/location_label.js"></script>
 
 </head>
 
@@ -112,7 +113,9 @@
                 ⌖
             </span>
 
-            My Location
+            <span class="location-label">
+                My Location
+            </span>
 
         </button>
 
@@ -232,25 +235,25 @@
 
                 <button
                     type="button"
-                    data-city="Hà Nội"
+                    data-city="Hanoi"
                 >
-                    Hà Nội
+                    Hanoi
                 </button>
 
 
                 <button
                     type="button"
-                    data-city="Đà Nẵng"
+                    data-city="Da Nang"
                 >
-                    Đà Nẵng
+                    Da Nang
                 </button>
 
 
                 <button
                     type="button"
-                    data-city="TP. Hồ Chí Minh"
+                    data-city="Ho Chi Minh City"
                 >
-                    TP. Hồ Chí Minh
+                    Ho Chi Minh City
                 </button>
 
             </div>
@@ -274,7 +277,7 @@
 
                 <article
                     class="weather-card is-active"
-                    data-city="Hà Nội"
+                    data-city="Hanoi"
                 >
 
                     <div class="card-topline">
@@ -302,7 +305,7 @@
 
                             <p class="place">
 
-                                Hà Nội
+                                Hanoi
 
                                 <span aria-hidden="true">
                                     ⌄
@@ -513,7 +516,7 @@
 
                 <article
                     class="weather-card"
-                    data-city="Đà Nẵng"
+                    data-city="Da Nang"
                 >
 
                     <div class="card-topline">
@@ -541,7 +544,7 @@
 
                             <p class="place">
 
-                                Đà Nẵng
+                                Da Nang
 
                                 <span aria-hidden="true">
                                     ⌄
@@ -749,7 +752,7 @@
 
                 <article
                     class="weather-card"
-                    data-city="TP. Hồ Chí Minh"
+                    data-city="Ho Chi Minh City"
                 >
 
                     <div class="card-topline">
@@ -777,7 +780,7 @@
 
                             <p class="place">
 
-                                TP. Hồ Chí Minh
+                                Ho Chi Minh City
 
                                 <span aria-hidden="true">
                                     ⌄
@@ -1277,7 +1280,7 @@
         <div>
 
             <span>
-                Last updated 13:42
+                Last updated <time id="last-updated">--:--</time>
             </span>
 
 

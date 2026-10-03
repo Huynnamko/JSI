@@ -5,8 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="../css/map.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="../js/check_session.js"></script>
+    <script src="../js/location_label.js"></script>
 </head>
 
 <body>
@@ -21,7 +24,7 @@
             <a class="login-button" href="login.html">Login</a>
             <button class="location-button" type="button" id="location-button">
                 <span aria-hidden="true">⌖</span>
-                My Location
+                <span class="location-label">My Location</span>
             </button>
         </header>
 
@@ -36,51 +39,24 @@
             </section>
 
             <div class="map-layout">
-                <section class="map-card" aria-label="Bản đồ thời tiết Việt Nam">
+                <section class="map-card" aria-label="Vietnam weather map">
                     <div class="map-toolbar">
                         <div class="map-title">Live weather map <span>· Vietnam</span></div>
-                        <label class="map-search">
-                            <span aria-hidden="true">⌕</span>
-                            <input class="search" type="search" placeholder="Search city..." aria-label="Search city">
-                        </label>
+                        <div class="map-search-wrap">
+                            <label class="map-search">
+                                <span aria-hidden="true">⌕</span>
+                                <input class="search" type="search" placeholder="Search city..." aria-label="Search city">
+                            </label>
+                            <div class="search-suggestions" id="search-suggestions" aria-live="polite"></div>
+                        </div>
                     </div>
-                    <div class="map-art" aria-hidden="true">
-                        <div class="grid-lines"></div>
-                        <div class="land one"></div>
-                        <div class="land two"></div>
-                        <div class="land three"></div>
-                        <div class="route one"></div>
-                        <div class="route two"></div>
-                        <span class="pin hanoi"></span><span class="pin danang"></span><span class="pin hcm"></span>
-                        <span class="map-label label-hanoi">Hà Nội · 31°</span><span class="map-label label-danang">Đà
-                            Nẵng · 33°</span><span class="map-label label-hcm">TP. HCM · 30°</span>
-                        <div class="legend"><span><i class="clear"></i>Clear</span><span><i
-                                    class="cloud"></i>Cloudy</span><span><i class="rain"></i>Rain</span></div>
-                    </div>
+                    <div id="map" aria-label="Weather map"></div>
                 </section>
 
-                <aside class="side-stack" aria-label="Thông tin thời tiết">
+                <aside class="side-stack" aria-label="Weather information">
                     <section class="side-card">
                         <h2>Selected cities</h2>
-                        <div class="city"><i class="weather-dot sun"></i>
-                            <div class="city-info"><span class="city-name">Hà Nội</span><span
-                                    class="city-condition">Partly sunny</span></div><strong class="degree">31°</strong>
-                        </div>
-                        <div class="city"><i class="weather-dot sun"></i>
-                            <div class="city-info"><span class="city-name">Đà Nẵng</span><span
-                                    class="city-condition">Clear skies</span></div><strong class="degree">33°</strong>
-                        </div>
-                        <div class="city"><i class="weather-dot rain"></i>
-                            <div class="city-info"><span class="city-name">TP. Hồ Chí Minh</span><span
-                                    class="city-condition">Chance of rain</span></div><strong
-                                class="degree">30°</strong>
-                        </div>
-                    </section>
-                    <section class="side-card">
-                        <h2>Temperature scale</h2>
-                        <div class="scale"></div>
-                        <div class="scale-labels"><span>20°</span><span>25°</span><span>30°</span><span>35°</span></div>
-                        <p class="note">Updated a few moments ago. Tap a city to see its local forecast.</p>
+                        <div class="city-list" id="selected-city-list"></div>
                     </section>
                 </aside>
             </div>
@@ -93,6 +69,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-firestore-compat.min.js"></script>        
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-storage-compat.min.js"></script>
     <script src="../js/firebase_config.js"></script>
+    <script src="../js/map.js"></script>
 </body>
 
 </html>

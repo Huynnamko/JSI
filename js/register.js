@@ -18,11 +18,11 @@ function handleRegister(event) {
     const roleId = 2;
 
     if (!username || !email || !password || !confirmPassword || !birthday || !gender) {
-        alert("Vui lòng điền đủ các trường");
+        alert("Please fill in all fields.");
         return;
     }
     if (password !== confirmPassword) {
-        alert("Mật khẩu không khớp");
+        alert("Passwords do not match.");
         return;
     }
 
@@ -45,16 +45,16 @@ function handleRegister(event) {
             user.updateProfile({ displayName: username })
                 .then(() => db.collection("users").doc(user.uid).set(userData))
                 .then(() => {
-                    alert("Đăng ký thành công");
+                    alert("Registration successful.");
                     window.location.href = "login.html";
                 })
                 .catch((error) => {
-                    alert("Đăng ký thất bại");
+                    alert("Registration failed.");
                     console.error("Error saving user profile: ", error);
                 });
         })
         .catch((error) => {
-            alert(`Lỗi: ${error.message}`);
+            alert(`Error: ${error.message}`);
             console.error(error);
         });
 }

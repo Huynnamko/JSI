@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const forecastGrid = document.getElementById('forecast-carousel');
     const prevButton = document.querySelector('.carousel-button[data-direction="prev"]');
     const nextButton = document.querySelector('.carousel-button[data-direction="next"]');
+    const backTopButton = document.querySelector('.back-top');
     const forecastCards = Array.from(document.querySelectorAll('.forecast-card')).slice(0, 5);
 
     const formatTemp = (value) => `${Math.round(value)}°C`;
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const ensureApiKey = () => {
         if (!apiKey || apiKey === 'API_KEY') {
-            console.warn('OpenWeather API key chưa được cấu hình.');
+            console.warn('OpenWeather API key is not configured.');
             return false;
         }
         return true;
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ]);
 
             if (!weatherRes.ok || !forecastRes.ok) {
-                throw new Error('Không thể tải dữ liệu thời tiết.');
+                throw new Error('Unable to load weather data.');
             }
 
             return {
@@ -125,6 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (nextButton) {
         nextButton.addEventListener('click', () => scrollForecast(1));
+    }
+
+    if (backTopButton) {
+        backTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 
     const renderForecastCards = (forecastData) => {
@@ -245,37 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     };
 
-    const renderMetricGrid = (weather, forecast, mode = activeDayMode) => {
-        const metricCards = document.querySelectorAll('.metric-grid article');
-        if (!metricCards.length) return;
-
-        const target = getDayForecastSnapshot(forecast, mode) || forecast?.list?.[0];
-        const uv = (target?.main?.temp ?? weather.main?.temp) > 30 ? 'High' : 'Moderate';
-        const visibility = `${(((target?.visibility ?? weather.visibility ?? 0) / 1000).toFixed(1))} km`;
-        const humidity = `${target?.main?.humidity ?? weather.main?.humidity ?? 0}%`;
-        const wind = `${Math.round(target?.wind?.speed ?? weather.wind?.speed ?? 0)} km/h`;
-        const sunrise = formatTime(weather.sys?.sunrise || 0);
-        const sunset = formatTime(weather.sys?.sunset || 0);
-
-        const values = [
-            { label: 'UV Index', value: uv },
-            { label: 'Wind Speed', value: wind },
-            { label: 'Sunrise & Sunset', value: `${sunrise}<br>${sunset}` },
-            { label: 'Humidity', value: humidity },
-            { label: 'Visibility', value: visibility },
-            { label: 'Air Speed', value: `${Math.round(((target?.wind?.speed ?? weather.wind?.speed ?? 0) * 2.75))} m/s` }
-        ];
-
-        metricCards.forEach((card, index) => {
-            const item = values[index];
-            if (!item) return;
-            const title = card.querySelector('h3');
-            const valueNode = card.querySelector('b');
-            if (title) title.textContent = item.label;
-            if (valueNode) valueNode.innerHTML = item.value;
-        });
-    };
-
     const renderCurrentWeather = ({ weather, forecast }) => {
         if (!weather || !forecast) return;
 
@@ -298,7 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setText('.section-kicker', '5-Day Forecast');
         renderForecastCards(forecast);
         renderDailySummary(weather, forecast, activeDayMode);
-        renderMetricGrid(weather, forecast, activeDayMode);
     };
 
     const setupDayTabs = () => {
@@ -314,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (currentWeatherData && currentForecastData) {
                     renderDailySummary(currentWeatherData, currentForecastData, activeDayMode);
-                    renderMetricGrid(currentWeatherData, currentForecastData, activeDayMode);
                 }
             });
         });
@@ -329,6 +303,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const requestedCity = new URLSearchParams(window.location.search).get('city');
     const savedCity = localStorage.getItem('wefo-selected-city') || defaultCity;
-    loadWeather(savedCity);
+    const selectedCity = requestedCity || savedCity;
+
+    if (requestedCity) {
+        localStorage.setItem('wefo-selected-city', requestedCity);
+    }
+
+    loadWeather(selectedCity);
 });

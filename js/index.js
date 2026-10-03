@@ -6,10 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevButton = document.querySelector('.carousel-prev');
     const nextButton = document.querySelector('.carousel-next');
     const currentDisplay = document.getElementById('carousel-current');
+    const lastUpdated = document.getElementById('last-updated');
     const searchForm = document.getElementById('search-form');
     const searchInput = document.getElementById('city');
     const searchStatus = document.getElementById('search-status');
+    const locationLabel = document.querySelector('#location-button .location-label');
     const quickCityButtons = Array.from(document.querySelectorAll('.quick-cities button'));
+    let latestCityRequest = 0;
 
     if (!cards.length) {
         return;
@@ -41,6 +44,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const getCardOpacity = (distance) => Math.max(0.38, 1 - Math.abs(distance) * 0.2);
     const getCardBrightness = (distance) => Math.max(0.82, 1 - Math.abs(distance) * 0.1);
 
+    const updateLocationLabel = (city) => {
+        if (locationLabel && city) {
+            const cityAliases = {
+                'Hà Nội': 'Hanoi',
+                'Đà Nẵng': 'Da Nang',
+                'TP. Hồ Chí Minh': 'Ho Chi Minh City'
+            };
+            locationLabel.textContent = cityAliases[city] || city;
+        }
+    };
+
+    const updateLastUpdated = () => {
+        if (lastUpdated) {
+            lastUpdated.textContent = new Intl.DateTimeFormat([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(new Date());
+        }
+    };
+
+    const persistCityList = () => {
+        const cityNames = cards
+            .map((card) => card.dataset.city)
+            .filter((city) => Boolean(city));
+
+        localStorage.setItem('wefo-map-cities', JSON.stringify(cityNames));
+    };
+
     const updateCarousel = (nextIndex) => {
         activeIndex = clampIndex(nextIndex);
 
@@ -54,7 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.filter = `brightness(${getCardBrightness(distance)})`;
             card.style.zIndex = isActive ? '20' : String(cards.length - Math.abs(distance));
             card.style.pointerEvents = isActive ? 'auto' : 'none';
+
+            const detailsLink = card.querySelector('.hourly-heading a');
+            if (detailsLink) {
+                detailsLink.href = `html/forecast.html?city=${encodeURIComponent(card.dataset.city || '')}`;
+            }
         });
+
+        persistCityList();
 
         if (currentDisplay) {
             currentDisplay.textContent = String(activeIndex + 1).padStart(2, '0');
@@ -145,16 +183,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const ensureApiKey = () => {
         if (!apiKey || apiKey === 'API_KEY') {
-            console.warn('OpenWeather API key chưa được cấu hình. Thay API_KEY trong js/index.js bằng khóa thật.');
+            console.warn('OpenWeather API key is not configured. Replace API_KEY in js/index.js with a valid key.');
             return false;
         }
         return true;
     };
 
-    const renderCardWeather = (card, weather, forecast) => {
+    const renderCardWeather = (card, weather, forecast, displayCity) => {
         if (!card || !weather) return;
 
-        const cityName = weather.name || card.dataset.city || 'City';
+        const cityName = displayCity || weather.name || card.dataset.city || 'City';
         const place = card.querySelector('.place');
         if (place) {
             place.innerHTML = `${cityName} <span aria-hidden="true">⌄</span>`;
@@ -197,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const iconClass = getWeatherIconClass(mainCondition, true);
         if (weatherIcon) {
             weatherIcon.className = `weather-icon wi ${iconClass}`;
+            weatherIcon.setAttribute('aria-label', condition?.textContent || mainCondition);
         }
 
         const hourlyItems = card.querySelectorAll('.hourly-list > div');
@@ -256,30 +295,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const loadCardWeather = async (card, city) => {
+        const data = await fetchWeatherData(city);
+
+        if (!data || data.error) {
+            return data;
+        }
+
+        renderCardWeather(card, data.weather, data.forecast, city);
+        return data;
+    };
+
     const loadCityWeather = async (city) => {
         const resolvedCity = city || defaultCity;
+        const requestId = ++latestCityRequest;
+        const activeCard = cards[activeIndex] || cards[0];
+        const data = await loadCardWeather(activeCard, resolvedCity);
 
-        const data = await fetchWeatherData(resolvedCity);
+        if (requestId !== latestCityRequest) {
+            return;
+        }
 
         if (!data || data.error) {
             if (searchStatus) {
                 searchStatus.textContent = data?.error === 'not-found'
-                    ? `Không tìm thấy thành phố "${resolvedCity}".`
-                    : 'Không thể tải dữ liệu thời tiết lúc này.';
+                    ? `Could not find the city "${resolvedCity}".`
+                    : 'Weather data is unavailable right now.';
             }
             return;
         }
 
         localStorage.setItem('wefo-selected-city', resolvedCity);
+        persistCityList();
+        updateLocationLabel(resolvedCity);
+        updateLastUpdated();
+
+        if (activeCard) {
+            activeCard.dataset.city = resolvedCity;
+            const detailsLink = activeCard.querySelector('.hourly-heading a');
+            if (detailsLink) {
+                detailsLink.href = `html/forecast.html?city=${encodeURIComponent(resolvedCity)}`;
+            }
+        }
 
         if (searchStatus) {
             searchStatus.textContent = '';
         }
 
-        const activeCard = cards[activeIndex] || cards[0];
-        if (activeCard) {
-            renderCardWeather(activeCard, data.weather, data.forecast);
-        }
     };
 
     quickCityButtons.forEach((button) => {
@@ -317,7 +379,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    persistCityList();
     updateCarousel(activeIndex);
     const savedCity = localStorage.getItem('wefo-selected-city') || defaultCity;
-    loadCityWeather(savedCity);
+    const savedCardIndex = cards.findIndex((card) => card.dataset.city?.toLowerCase() === savedCity.toLowerCase());
+
+    if (savedCardIndex >= 0) {
+        updateCarousel(savedCardIndex);
+    }
+
+    updateLocationLabel(savedCity);
+
+    Promise.all(cards.map((card) => loadCardWeather(card, card.dataset.city)))
+        .then(() => {
+            const currentSavedCity = localStorage.getItem('wefo-selected-city') || defaultCity;
+            if (currentSavedCity.toLowerCase() !== savedCity.toLowerCase()) {
+                return;
+            }
+
+            const activeCard = cards[activeIndex] || cards[0];
+            if (activeCard?.dataset.city?.toLowerCase() !== savedCity.toLowerCase()) {
+                return loadCityWeather(savedCity);
+            }
+
+            updateLocationLabel(savedCity);
+        });
 });
