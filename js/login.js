@@ -1,11 +1,14 @@
 
+// Form và các trường đăng nhập được truy vấn theo class/id trong html/login.html.
 const inpEmail = document.querySelector(".inp-email");
 const inpPwd = document.querySelector(".inp-pwd");
 const loginForm = document.querySelector("#login-form");
 
+// Session còn hạn sẽ được chuyển thẳng về trang chủ thay vì hiển thị lại form đăng nhập.
 const now = new Date().getTime();
 const userSession = JSON.parse(localStorage.getItem("user_session") || "null");
 
+// Đồng bộ hồ sơ tối thiểu vào localStorage để trang profile có thể render nhanh trước khi Firestore phản hồi.
 async function cacheProfile(user) {
     let profileData = {
         uid: user.uid,
@@ -17,6 +20,7 @@ async function cacheProfile(user) {
 
     try {
         const cachedProfile = JSON.parse(localStorage.getItem("profile_data") || "null");
+        // Chỉ tái sử dụng cache thuộc đúng UID; cache đủ thông tin thì không cần đọc Firestore lần nữa.
         if (cachedProfile?.uid === user.uid) {
             profileData = { ...profileData, ...cachedProfile };
 
@@ -25,6 +29,7 @@ async function cacheProfile(user) {
             }
         }
 
+        // Dữ liệu server là nguồn bổ sung cho ngày sinh/giới tính không có trong Firebase Auth.
         const profileSnapshot = await db.collection("users").doc(user.uid).get();
         if (profileSnapshot.exists) {
             profileData = { ...profileData, ...profileSnapshot.data() };
@@ -37,9 +42,11 @@ async function cacheProfile(user) {
 }
 
 if (now < userSession?.expiry) {
+    // Điều hướng người dùng đã đăng nhập còn hạn khỏi form, tránh tạo session giao diện thứ hai.
     window.location.href = "../index.html";
 }
 
+// Luồng đăng nhập email: chặn submit mặc định, xác thực với Firebase, lưu hạn session và mở trang chủ.
 function handleLogin(event) {
     event.preventDefault(); // Ngăn chặn hành vi mặc định của form
 
@@ -52,10 +59,10 @@ function handleLogin(event) {
         return;
     }
 
-    // Sign in with Firebase Auth
+    // Firebase xác minh thông tin; dữ liệu profile được cache song song sau khi đăng nhập thành công.
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then(async (userCredential) => {
-            // Signed in
+            // Session client có hạn hai giờ để các trang giao diện biết khi nào cần quay lại đăng nhập.
             var user = userCredential.user;
             const userSession = {
                 user,
@@ -77,7 +84,7 @@ function handleLogin(event) {
 
 loginForm.addEventListener("submit", handleLogin);
 
-// Google Login
+// Luồng đăng nhập Google dùng popup Firebase; nút được kiểm tra tồn tại để script không phụ thuộc mọi trang.
 const googleLoginBtn = document.getElementById("google-login");
 if (googleLoginBtn) {
     googleLoginBtn.addEventListener('click', function() {

@@ -1,3 +1,4 @@
+// PROFILE: các phần tử hồ sơ được cập nhật từ Firebase Auth, Firestore hoặc cache theo UID.
 const profileName = document.querySelector("#profile-name");
 const profileEmail = document.querySelector("#profile-email");
 const profilePassword = document.querySelector("#profile-password");
@@ -6,9 +7,8 @@ const profileGender = document.querySelector("#profile-gender");
 const profileStatus = document.querySelector(".status");
 const editProfileButton = document.querySelector("#editProfileButton");
 const logoutButton = document.querySelector("#logoutButton");
-const premiumButton = document.querySelector("#premiumButton");
-const premiumNote = document.querySelector("#premiumNote");
 
+// currentUser là nguồn xác thực cho thao tác lưu; profileData là snapshot đang được hiển thị/chỉnh sửa.
 let currentUser = null;
 let profileData = null;
 let isEditing = false;
@@ -22,10 +22,12 @@ const profileFields = {
 	gender: profileGender
 };
 
+// Chuẩn hóa trường trống thành nhãn dễ hiểu thay vì để UI hiển thị chuỗi rỗng.
 function displayValue(value) {
 	return value || "Not provided";
 }
 
+// Ngày lưu dạng YYYY-MM-DD được đổi sang DD/MM/YYYY chỉ ở bước trình bày.
 function formatBirthday(value) {
 	if (!value) {
 		return "Not provided";
@@ -40,6 +42,7 @@ function formatBirthday(value) {
 	return `${day}/${month}/${year}`;
 }
 
+// Không dùng cache của tài khoản khác; JSON lỗi được bỏ qua để có thể tải lại từ Firestore.
 function getCachedProfile(uid) {
 	try {
 		const cachedProfile = JSON.parse(localStorage.getItem("profile_data") || "null");
@@ -50,6 +53,7 @@ function getCachedProfile(uid) {
 	}
 }
 
+// Render bản cache trước để trang có nội dung ngay khi mạng/Firebase phản hồi chậm.
 function renderStoredSession() {
 	try {
 		const storedSession = JSON.parse(localStorage.getItem("user_session") || "null");
@@ -77,6 +81,7 @@ function renderStoredSession() {
 	}
 }
 
+// Chỉ cập nhật text node, không diễn giải dữ liệu tên/email thành HTML.
 function renderProfile(data) {
 	profileName.textContent = displayValue(data.username);
 	profileEmail.textContent = displayValue(data.email);
@@ -89,6 +94,7 @@ function renderProfile(data) {
 	}
 }
 
+// Ghép thông tin Auth (tên/email) với hồ sơ Firestore (ngày sinh/giới tính) và cache theo UID.
 async function loadProfile(user) {
 	const isGoogleAccount = user.providerData.some(
 		(provider) => provider.providerId === "google.com"
@@ -130,6 +136,7 @@ async function loadProfile(user) {
 	};
 }
 
+// Tạo đúng control theo loại trường: gender dùng select, ngày sinh dùng date, các trường còn lại dùng text/email.
 function createEditor(field, value) {
 	if (field === "gender") {
 		const select = document.createElement("select");
@@ -151,6 +158,7 @@ function createEditor(field, value) {
 	return input;
 }
 
+// Chuyển các giá trị đang xem thành input mà không dựng HTML từ dữ liệu hồ sơ.
 function startEditing() {
 	Object.entries(profileFields).forEach(([field, element]) => {
 		element.replaceChildren(createEditor(field, profileData[field]));
@@ -160,6 +168,7 @@ function startEditing() {
 	isEditing = true;
 }
 
+// Đọc giá trị mới từ các control được tạo trong startEditing.
 function readEditedProfile() {
 	return Object.fromEntries(
 		Object.entries(profileFields).map(([field, element]) => {
@@ -169,6 +178,7 @@ function readEditedProfile() {
 	);
 }
 
+// Cập nhật Auth trước, sau đó lưu hồ sơ bổ sung vào Firestore và cache lại khi mọi bước thành công.
 async function saveProfile() {
 	const updatedProfile = readEditedProfile();
 
@@ -210,6 +220,7 @@ async function saveProfile() {
 	alert("Profile updated successfully");
 }
 
+// Nút Edit/Save dùng cùng handler và đổi hành vi dựa trên trạng thái isEditing.
 async function handleEditProfile() {
 	if (!isEditing) {
 		startEditing();
@@ -224,6 +235,7 @@ async function handleEditProfile() {
 	}
 }
 
+// Đăng xuất Firebase trước khi xóa session giao diện và điều hướng tới login.
 async function handleLogout() {
 	try {
 		await firebase.auth().signOut();
@@ -235,22 +247,10 @@ async function handleLogout() {
 	}
 }
 
-function setupPremiumButton() {
-	if (!premiumButton) {
-		return;
-	}
-
-	premiumButton.addEventListener("click", () => {
-		premiumButton.textContent = "Activated";
-		premiumButton.disabled = true;
-		premiumNote.textContent = "Premium has been activated for your account.";
-	});
-}
-
 editProfileButton.addEventListener("click", handleEditProfile);
 logoutButton.addEventListener("click", handleLogout);
-setupPremiumButton();
 
+// Firebase Auth là nguồn xác nhận cuối; khi có user mới mở khả năng chỉnh sửa và tải profile server.
 firebase.auth().onAuthStateChanged(async (user) => {
 	if (!user) {
 		return;
@@ -277,4 +277,5 @@ firebase.auth().onAuthStateChanged(async (user) => {
 	}
 });
 
+// Hiển thị cache sớm; listener Auth phía trên sẽ thay bằng dữ liệu đã xác thực khi sẵn sàng.
 renderStoredSession();

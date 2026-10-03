@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Register</title>
+    <!-- CSS và Firebase SDK phục vụ riêng trang đăng ký; register.js dùng các class của từng input bên dưới. -->
     <link rel="stylesheet" href="../css/register.css">
     <link rel="icon" href="../images/weather icon.png">
 </head>
@@ -14,6 +15,7 @@
     <div class="card">
         <div class="form-container">
             <h2>Register</h2>
+            <!-- Các trường required và id/class là giao diện dữ liệu mà register.js đọc khi submit. -->
             <form id="register-form" class="form">
 
                 <div class="field">
@@ -62,6 +64,7 @@
             </div>
         </div>
     </div>
+    <!-- Nạp Auth/Firestore/Storage trước cấu hình và handler tạo tài khoản. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

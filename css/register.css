@@ -1,4 +1,4 @@
-/* Register theme matching login: #464B71, #118AB2, #7CD5C7, #F2F2ED */
+/* Registration mirrors login's palette while reserving vertical room for the additional profile fields. */
 
 :root {
   --register-primary: #464b71;
@@ -33,6 +33,7 @@ body {
 }
 
 .card {
+  /* Keep the registration form centered and let it grow vertically when fields wrap on small screens. */
   width: 100%;
   max-width: 1200px;
   min-height: calc(100vh - 70px);
@@ -45,6 +46,7 @@ body {
 }
 
 .form-container {
+  /* The width cap keeps long registration labels and controls readable on larger displays. */
   width: 100%;
   max-width: 400px;
   padding: 40px;
@@ -75,6 +77,7 @@ body {
 }
 
 .field {
+  /* Stack each label with its control so the longer registration form remains scannable. */
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -106,18 +109,21 @@ body {
 
 .field input:focus,
 .field select:focus {
+  /* Shared focus treatment makes both text fields and the gender selector keyboard-visible. */
   outline: none;
   border-color: var(--register-accent);
   box-shadow: 0 0 0 3px var(--register-focus);
 }
 
 .actions {
+  /* Keep the account-creation submit control separated from the final profile field. */
   display: flex;
   gap: 12px;
   margin-top: 12px;
 }
 
 .register-btn {
+  /* Main form action; focus, hover and pressed states are defined directly below. */
   flex: 1;
   padding: 14px 24px;
   border: none;
@@ -143,6 +149,7 @@ body {
 }
 
 .login-link {
+  /* Secondary route back to the sign-in page for existing users. */
   margin-top: 20px;
   color: var(--register-muted);
   font-size: 14px;
@@ -162,6 +169,7 @@ body {
 }
 
 @media (max-width: 600px) {
+  /* Smaller padding and larger input text improve touch targets and avoid mobile browser zoom. */
   .form-container {
     padding: 24px;
   }

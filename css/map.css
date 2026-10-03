@@ -1,5 +1,7 @@
+/* Map page styling: Leaflet owns tiles/markers, while these rules style its search, weather panel, and controls. */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* Color tokens keep the map shell and sidebar aligned with the rest of WeFo. */
 :root {
     --navy: #464B71;
     --blue: #118AB2;
@@ -22,7 +24,7 @@
 
 body {
     margin: 0;
-    min-width: 320px;
+    min-width: 0;
     color: var(--paper);
     background: linear-gradient(135deg, var(--navy) 0%, var(--deep) 48%, var(--blue) 100%);
     font-family: Inter, sans-serif;
@@ -39,12 +41,14 @@ input {
 }
 
 .weather-shell {
+    /* Decorative page background sits below the fixed header and map interaction layers. */
     background: radial-gradient(circle at 84% 8%, rgba(124, 213, 199, .22), transparent 24%);
     min-height: 100vh;
     overflow: hidden;
     position: relative;
 }
 
+/* Fixed shared navigation stays above Leaflet's pane stack and reserves consistent height for the map viewport. */
 .site-header {
     align-items: center;
     display: flex;
@@ -116,6 +120,7 @@ input {
     z-index: 2;
 }
 
+/* Navigation consumes flexible space while the brand, login and location actions keep their intrinsic widths. */
 .main-nav {
     display: flex;
     flex: 1 1 auto;
@@ -196,6 +201,7 @@ input {
     font-size: 16px;
 }
 
+/* Main content offsets the fixed header and caps page width independently of the Leaflet canvas. */
 main {
     margin: 0 auto;
     max-width: 1240px;
@@ -243,6 +249,7 @@ h1 em {
 }
 
 .map-layout {
+    /* Leaflet canvas takes remaining width; selected cities stay in a stable sidebar track. */
     display: grid;
     gap: 18px;
     grid-template-columns: minmax(0, 1fr) 280px;
@@ -257,6 +264,7 @@ h1 em {
     color: var(--white);
 }
 
+/* Map card is the positioning context for the toolbar and absolutely inset Leaflet surface. */
 .map-card {
     min-height: 610px;
     overflow: hidden;
@@ -264,6 +272,7 @@ h1 em {
     position: relative;
 }
 
+/* Toolbar sits above the map and keeps the global search aligned with its title. */
 .map-toolbar {
     align-items: center;
     display: flex;
@@ -282,11 +291,13 @@ h1 em {
     font-weight: 400;
 }
 
+/* The suggestion list is positioned relative to the toolbar input, not the map viewport. */
 .map-search-wrap {
     position: relative;
     width: min(100%, 260px);
 }
 
+/* Light search surface preserves input contrast over the darker page palette. */
 .map-search {
     align-items: center;
     background: rgba(255, 255, 255, .92);
@@ -346,6 +357,7 @@ h1 em {
     transition: background-color 5000s ease-in-out 0s;
 }
 
+/* Hidden until search results arrive; scroll cap keeps a long global result list inside the toolbar. */
 .search-suggestions {
     background: rgba(255, 255, 255, .96);
     border: 1px solid rgba(70, 75, 113, .12);
@@ -391,6 +403,7 @@ h1 em {
     padding: 12px;
 }
 
+/* Leaflet fills this clipped panel; tile panes sit below markers, popups, and map controls. */
 #map {
     background: #dff3f2;
     border-radius: 16px;
@@ -411,6 +424,7 @@ h1 em {
     border: 0;
 }
 
+/* Hand-built condition symbols share one fixed box so Leaflet marker anchors do not jump. */
 .weather-map-symbol {
     display: block;
     filter: drop-shadow(0 2px 3px rgba(24, 39, 54, .32));
@@ -503,6 +517,7 @@ h1 em {
     left: 32px;
 }
 
+/* Keep Leaflet's built-in zoom buttons legible above tiles and weather markers. */
 #map .leaflet-control-zoom {
     border: 0;
     border-radius: 12px;
@@ -532,6 +547,7 @@ h1 em {
     margin-bottom: 2px;
 }
 
+/* The sidebar groups selected home cities and keeps their rows aligned beside the map. */
 .side-stack {
     display: grid;
     gap: 18px;
@@ -636,6 +652,7 @@ h1 em {
 }
 
 @media (max-width: 800px) {
+    /* Move navigation and selected-city sidebar below the map when two columns become cramped. */
     .site-header {
         flex-wrap: wrap;
         gap: 18px;
@@ -669,12 +686,17 @@ h1 em {
 }
 
 @media (max-width: 480px) {
+    /* On phones, stack the toolbar, reclaim header space, and inset the map below its taller controls. */
     .login-button {
         display: none;
     }
 
     .location-button {
         margin-left: auto;
+    }
+
+    .location-button .location-label {
+        display: none;
     }
 
     .map-search {

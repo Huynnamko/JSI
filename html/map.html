@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Map</title>
+    <!-- Leaflet phải có trước map.js; CSS bản đồ đi riêng để không ảnh hưởng các trang khác. -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="../css/map.css?v=3">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -30,6 +31,7 @@
         </header>
 
         <main>
+            <!-- Bản đồ toàn cầu và danh sách city card đồng bộ từ localStorage của trang Today. -->
             <section class="intro" aria-labelledby="map-title">
                 <div>
                     <p class="eyebrow">Visual weather data</p>
@@ -41,6 +43,7 @@
                     <section class="map-card" aria-label="Global weather map">
                     <div class="map-toolbar">
                         <div class="map-title">Live weather map <span>· Worldwide</span></div>
+                        <!-- Ô tìm dùng WeFoPlaceSearch; tọa độ nằm trong dữ liệu option, không đưa vào text hiển thị. -->
                         <div class="map-search-wrap">
                             <label class="map-search">
                                 <span aria-hidden="true">⌕</span>
@@ -49,10 +52,12 @@
                             <div class="search-suggestions" id="search-suggestions" aria-live="polite"></div>
                         </div>
                     </div>
+                    <!-- Leaflet gắn tile, marker thời tiết và marker vị trí hiện tại vào container này. -->
                     <div id="map" aria-label="Global weather map"></div>
                 </section>
 
                 <aside class="side-stack" aria-label="Weather information">
+                    <!-- Mỗi nút city chuyển map tới marker nhưng danh sách vẫn lấy từ các card home. -->
                     <section class="side-card">
                         <h2>Selected cities</h2>
                         <div class="city-list" id="selected-city-list"></div>
@@ -61,6 +66,7 @@
             </div>
         </main>
     </div>
+    <!-- Thứ tự quan trọng: Firebase config và place_search nạp trước map.js; Leaflet đã được nạp trong head. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

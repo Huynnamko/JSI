@@ -1,4 +1,6 @@
+// PLACE SEARCH DÙNG CHUNG: home và map gọi cùng một parser để tên/nhãn/tọa độ không bị lệch nhau.
 window.WeFoPlaceSearch = (() => {
+    // Fallback cho các địa danh Việt Nam thường tìm bằng dấu; kết quả local tránh phụ thuộc geocoder cho các tên này.
     const vietnamFallbackPlaces = {
         'Tây Ninh': { coords: [11.3, 106.1], temp: 30, condition: 'Warm and calm' },
         'Hà Nội': { coords: [21.0278, 105.8342], temp: 31, condition: 'Partly sunny' },
@@ -17,6 +19,7 @@ window.WeFoPlaceSearch = (() => {
         'Bà Rịa - Vũng Tàu': { coords: [10.5417, 107.242], temp: 31, condition: 'Warm' }
     };
 
+    // Chuẩn hóa dấu, dấu câu và khoảng trắng để tìm không phân biệt dấu tiếng Việt.
     const normalize = (value) => String(value || '')
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -25,19 +28,23 @@ window.WeFoPlaceSearch = (() => {
         .replace(/\s+/g, ' ')
         .trim();
 
+    // Tọa độ không phải tên địa điểm; loại query kiểu "lat, lon" để chúng không xuất hiện trên ô tìm kiếm.
     const isCoordinateText = (value) => /^\s*[-+]?\d{1,3}(?:\.\d+)?\s*[,; ]\s*[-+]?\d{1,3}(?:\.\d+)?\s*$/.test(String(value || ''));
 
+    // Bỏ tiền tố hành chính và phần trong ngoặc để tên gợi ý ngắn, dễ đọc.
     const cleanName = (value) => String(value || '')
         .replace(/\s*\([^)]*\)/g, '')
         .replace(/^(?:Thành phố|Tỉnh|Quận|Huyện|Thị xã)\s+/i, '')
         .replace(/\s+/g, ' ')
         .trim();
 
+    // Chỉ chấp nhận nhãn có chữ; loại tọa độ, chuỗi số và URL khỏi nội dung hiển thị.
     const isUsableName = (value) => value.length > 1 &&
         !/^\d+$/.test(value) &&
         !isCoordinateText(value) &&
         !value.includes('https://');
 
+    // Chuẩn hóa và khử lặp các cấp địa lý khi ghép tên vùng/quốc gia cho địa điểm trùng tên.
     const uniqueParts = (values, excludedName = '') => {
         const seen = new Set([normalize(excludedName)]);
         return values
@@ -51,6 +58,7 @@ window.WeFoPlaceSearch = (() => {
             });
     };
 
+    // Lọc response Nominatim: kiểm tra phạm vi tọa độ, độ liên quan query, địa điểm trùng tọa độ và nhãn.
     const makeNominatimResults = (items, query) => {
         const seenCoordinates = new Set();
         const places = [];
@@ -62,9 +70,11 @@ window.WeFoPlaceSearch = (() => {
             if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return;
 
             const address = item.address || {};
+            // Một kết quả chỉ được giữ nếu mọi từ trong query xuất hiện trong tên hoặc địa chỉ trả về.
             const searchableText = normalize([item.name, item.display_name, ...Object.values(address)].join(' '));
             if (!queryTokens.every((token) => searchableText.includes(token))) return;
 
+            // Làm tròn nhẹ để hai feature có cùng vị trí không tạo hai gợi ý/marker riêng.
             const coordinateKey = `${lat.toFixed(5)},${lon.toFixed(5)}`;
             if (seenCoordinates.has(coordinateKey)) return;
             seenCoordinates.add(coordinateKey);
@@ -86,6 +96,7 @@ window.WeFoPlaceSearch = (() => {
             const name = candidates.map(cleanName).find(isUsableName);
             if (!name) return;
 
+            // Giữ tên, tọa độ và ngữ cảnh riêng; label chỉ phục vụ UI, selectionName dùng khi tên bị trùng.
             places.push({
                 name,
                 coords: [lat, lon],
@@ -96,12 +107,14 @@ window.WeFoPlaceSearch = (() => {
             });
         });
 
+        // Đếm tên trước khi tạo nhãn để chỉ thêm vùng/quốc gia khi thật sự cần phân biệt.
         const nameCounts = new Map();
         places.forEach((place) => {
             const key = normalize(place.name);
             nameCounts.set(key, (nameCounts.get(key) || 0) + 1);
         });
 
+        // Không hiển thị hai lựa chọn có cùng nhãn sau khi đã thêm ngữ cảnh địa lý.
         const usedLabels = new Set();
         return places.map((place) => {
             const isDuplicateName = nameCounts.get(normalize(place.name)) > 1;
@@ -124,11 +137,13 @@ window.WeFoPlaceSearch = (() => {
         }).filter(Boolean).slice(0, 8);
     };
 
+    // Thứ tự lookup: kiểm tra query, thử fallback local, rồi gọi Nominatim cho địa danh toàn cầu.
     const search = async (query) => {
         const normalizedQuery = String(query || '').trim();
         if (normalizedQuery.length < 2 || isCoordinateText(normalizedQuery)) return [];
 
         const normalizedLookup = normalize(normalizedQuery);
+        // Fallback Việt Nam trả về ngay khi có kết quả để tìm tên có dấu vẫn hoạt động nếu API ngoài chậm.
         const localMatches = Object.entries(vietnamFallbackPlaces)
             .filter(([name]) => normalize(name).includes(normalizedLookup))
             .slice(0, 8)
@@ -140,6 +155,7 @@ window.WeFoPlaceSearch = (() => {
             }));
         if (localMatches.length) return localMatches;
 
+        // Request geocoder toàn cầu; addressdetails cung cấp vùng/quốc gia để xử lý tên trùng.
         const url = new URL('https://nominatim.openstreetmap.org/search');
         url.searchParams.set('format', 'jsonv2');
         url.searchParams.set('limit', '8');

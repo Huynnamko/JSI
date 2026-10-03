@@ -7,7 +7,8 @@
 
     <title>WeFo | Weather Forecast</title>
 
-    <link rel="stylesheet" href="../css/forecast.css?v=2">
+    <!-- CSS trang forecast chứa bố cục card và icon; check_session/location_label dùng chung với các trang cần đăng nhập. -->
+    <link rel="stylesheet" href="../css/forecast.css?v=3">
     <script src="../js/check_session.js"></script>
     <script src="../js/location_label.js"></script>
 </head>
@@ -127,6 +128,8 @@
                 aria-labelledby="weekly-title"
             >
 
+                <!-- Năm card bên dưới là khung dự phòng; forcecast.js nhóm forecast theo ngày rồi thay nội dung từng card. -->
+
                 <div class="section-heading">
 
                     <div>
@@ -150,7 +153,7 @@
                 >
 
 
-                    <!-- Wednesday -->
+                    <!-- Mỗi card giữ cùng cấu trúc ngày/icon/high-low/RealFeel để JS cập nhật theo chỉ số ngày. -->
 
                     <article class="forecast-card">
 
@@ -162,7 +165,7 @@
                         </h3>
 
                         <div class="weather-symbol">
-                            ☁
+                            <img class="openweather-icon" src="https://openweathermap.org/img/wn/03d@2x.png" alt="Cloudy" width="64" height="64">
                         </div>
 
                         <strong>
@@ -195,7 +198,7 @@
                         </h3>
 
                         <div class="weather-symbol">
-                            ☁
+                            <img class="openweather-icon" src="https://openweathermap.org/img/wn/03d@2x.png" alt="Cloudy" width="64" height="64">
                         </div>
 
                         <strong>
@@ -228,7 +231,7 @@
                         </h3>
 
                         <div class="weather-symbol">
-                            ☀
+                            <img class="openweather-icon" src="https://openweathermap.org/img/wn/03d@2x.png" alt="Cloudy" width="64" height="64">
                         </div>
 
                         <strong>
@@ -261,7 +264,7 @@
                         </h3>
 
                         <div class="weather-symbol">
-                            ☀
+                            <img class="openweather-icon" src="https://openweathermap.org/img/wn/03d@2x.png" alt="Cloudy" width="64" height="64">
                         </div>
 
                         <strong>
@@ -294,7 +297,7 @@
                         </h3>
 
                         <div class="weather-symbol">
-                            ☁
+                            <img class="openweather-icon" src="https://openweathermap.org/img/wn/03d@2x.png" alt="Cloudy" width="64" height="64">
                         </div>
 
                         <strong>
@@ -321,7 +324,7 @@
 
 
 
-            <!-- ================= HIGHLIGHTS ================= -->
+            <!-- Highlights đổi Today/Tomorrow từ cùng forecast snapshot; các nút .tabs là hook của forcecast.js. -->
 
             <section
                 class="highlights"
@@ -366,7 +369,7 @@
                 <div class="highlight-layout">
 
 
-                    <!-- ================= DAILY SUMMARY ================= -->
+                    <!-- Tóm tắt dùng mốc gần giữa trưa của ngày chọn; các chỉ số bên dưới lấy từ cùng snapshot đó. -->
 
                     <article class="daily-summary">
 
@@ -375,7 +378,7 @@
                             <div>
 
                                 <span class="weather-symbol small">
-                                    ☁
+                                    <img class="openweather-icon" src="https://openweathermap.org/img/wn/03d@2x.png" alt="Cloudy" width="64" height="64">
                                 </span>
 
                                 <strong>
@@ -398,6 +401,7 @@
                         <hr>
 
 
+                        <!-- Bốn ô hiển thị sunrise, sunset, humidity và wind của thành phố đang xem. -->
                         <div class="summary-items">
 
                             <span>
@@ -476,6 +480,7 @@
 
         <!-- ================= BACK TO TOP ================= -->
 
+        <!-- Nút tiện ích cuộn trang về đầu, độc lập với logic tải forecast. -->
         <button
             class="back-top"
             type="button"
@@ -485,6 +490,7 @@
         </button>
 
     </div>
+    <!-- Nạp Firebase SDK/config trước forcecast.js vì script forecast lưu snapshot weather dùng chung với map. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="
@@ -492,7 +498,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-firestore-compat.min.js"></script>        
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-storage-compat.min.js"></script>
     <script src="../js/firebase_config.js"></script>
-    <script src="../js/forcecast.js?v=5"></script>
+    <script src="../js/forcecast.js?v=6"></script>
 </body>
 
 </html>

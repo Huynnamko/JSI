@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* Profile palette tokens coordinate account surfaces with the home and map pages. */
 :root {
     --navy: #464B71;
     --blue: #118AB2;
@@ -40,6 +41,7 @@ body {
 }
 
 .site-header {
+    /* Fixed header matches other pages; .page reserves top padding so content begins below it. */
     align-items: center;
     background: rgba(70, 75, 113, .96);
     display: flex;
@@ -192,15 +194,6 @@ body {
     font-size: 16px;
 }
 
-.eyebrow {
-    color: var(--mint);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin: 0 0 10px;
-}
-
 h1 {
     font: 800 clamp(42px, 7vw, 72px)/.98 Inter, sans-serif;
     letter-spacing: -3px;
@@ -215,14 +208,16 @@ h1 {
 }
 
 .layout {
+    /* A single centered track keeps the account surface readable on wide screens. */
     align-items: stretch;
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr);
+    grid-template-columns: minmax(0, 820px);
     gap: 28px;
+    justify-content: center;
 }
 
-.profile-card,
-.premium-card {
+.profile-card {
+    /* Main account surface contains both the identity heading and editable details grid. */
     background: var(--white);
     border: 1px solid var(--line);
     border-radius: 24px;
@@ -314,6 +309,7 @@ h2 {
 }
 
 .details {
+    /* Two columns use desktop width efficiently; profile.js replaces values with controls during editing. */
     align-content: space-between;
     background: #F6F8FC;
     border: 1px solid rgba(70, 75, 113, .10);
@@ -360,78 +356,9 @@ h2 {
 }
 
 .profile-input:focus {
+    /* Keep keyboard focus visible while the user edits account fields. */
     border-color: var(--blue);
     outline: 3px solid rgba(17, 138, 178, .18);
-}
-
-.premium-card {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--blue), var(--yellow));
-    color: var(--white);
-    padding: 32px;
-}
-
-.premium-card:after {
-    content: '+';
-    position: absolute;
-    right: 24px;
-    top: 12px;
-    color: #8bc0b5;
-    font: 100px Inter, sans-serif;
-    line-height: 1;
-}
-
-.premium-card .eyebrow {
-    color: var(--paper);
-}
-
-.premium-card h2 {
-    font-size: 36px;
-    max-width: 220px;
-    margin-bottom: 16px;
-}
-
-.premium-copy {
-    color: rgba(255, 255, 255, .78);
-    line-height: 1.55;
-    font-size: 14px;
-    max-width: 280px;
-}
-
-.benefits {
-    list-style: none;
-    padding: 20px 0 8px;
-    margin: 0;
-    border-top: 1px solid rgba(255, 255, 255, .2);
-}
-
-.benefits li {
-    padding: 9px 0;
-    font-size: 14px;
-}
-
-.benefits li:before {
-    content: '✓';
-    color: var(--yellow);
-    font-weight: bold;
-    margin-right: 10px;
-}
-
-.price-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    margin-top: 16px;
-}
-
-.price {
-    font: 700 33px Inter, sans-serif;
-}
-
-.price small {
-    font: 14px Inter, sans-serif;
-    color: rgba(255, 255, 255, .78);
 }
 
 button {
@@ -455,14 +382,8 @@ button:focus-visible {
     outline-offset: 3px;
 }
 
-.note {
-    min-height: 20px;
-    color: var(--yellow);
-    font-size: 13px;
-    margin: 16px 0 0;
-}
-
 @media (max-width:720px) {
+    /* Hide desktop navigation and stack account fields into one column on narrow screens. */
     .site-header {
         gap: 12px;
         padding: 20px 16px;
@@ -490,7 +411,4 @@ button:focus-visible {
         grid-template-columns: 1fr;
     }
 
-    .premium-card h2 {
-        font-size: 32px;
-    }
 }

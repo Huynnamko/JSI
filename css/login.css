@@ -1,4 +1,4 @@
-/* Login theme: #464B71, #118AB2, #7CD5C7, #F2F2ED */
+/* Login uses a compact centered form; these tokens keep input, focus, and button states on one palette. */
 
 :root {
   --login-primary: #464b71;
@@ -33,6 +33,7 @@ body {
 }
 
 .card {
+  /* The outer card fills the viewport so the form can remain centered on desktop and mobile. */
   width: 100%;
   max-width: 1200px;
   min-height: calc(100vh - 70px);
@@ -45,6 +46,7 @@ body {
 }
 
 .form-container {
+  /* Constrain form width for readable labels while allowing a full-width mobile layout. */
   width: 100%;
   max-width: 400px;
   padding: 40px;
@@ -75,6 +77,7 @@ body {
 }
 
 .field {
+  /* Label/input stacks stay aligned and expose a consistent gap between credential fields. */
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -103,18 +106,21 @@ body {
 }
 
 .field input:focus {
+  /* Visible focus ring supports keyboard navigation and distinguishes the active credential field. */
   outline: none;
   border-color: var(--login-accent);
   box-shadow: 0 0 0 3px var(--login-focus);
 }
 
 .actions {
+  /* Primary submit row reserves separation from the final input and fills the form width. */
   display: flex;
   gap: 12px;
   margin-top: 12px;
 }
 
 .social-divider {
+  /* Visual separator distinguishes Firebase email sign-in from the Google popup flow. */
   display: flex;
   align-items: center;
   gap: 12px;
@@ -133,6 +139,7 @@ body {
 }
 
 .google-btn {
+  /* Separate OAuth action: full-width target and its own focus/hover states below. */
   width: 100%;
   padding: 13px 20px;
   display: flex;
@@ -170,6 +177,7 @@ body {
 }
 
 .login-btn {
+  /* Primary credential submit action; :hover and :active provide mouse/touch feedback. */
   flex: 1;
   padding: 14px 24px;
   border: none;
@@ -195,6 +203,7 @@ body {
 }
 
 .register-link {
+  /* Secondary navigation for users who need to create an account instead. */
   margin-top: 20px;
   color: var(--login-muted);
   font-size: 14px;
@@ -214,6 +223,7 @@ body {
 }
 
 @media (max-width: 600px) {
+  /* Reduce padding and keep inputs at a legible mobile font size to avoid browser zoom on focus. */
   .form-container {
     padding: 24px;
   }

@@ -12,8 +12,10 @@
 
     <title>WeFo | Today</title>
 
+    <!-- Trang Today là điểm vào chính: weathericons cung cấp glyph cho card, còn home.css giữ toàn bộ bố cục riêng. -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weathericons/2.0.10/css/weather-icons.min.css">
     <link rel="stylesheet" href="css/home.css">
+    <!-- Session gate cần chạy sớm; location label chỉ cập nhật nhãn header sau khi DOM được dựng. -->
     <script src="js/check_session.js"></script>
     <script src="js/location_label.js"></script>
 
@@ -24,6 +26,7 @@
 
 <div class="weather-shell">
 
+    <!-- Các lớp nền/trang trí chỉ phục vụ hình ảnh, ẩn khỏi trình đọc màn hình và không chứa dữ liệu thời tiết. -->
     <div class="ambient ambient-one" aria-hidden="true"></div>
     <div class="ambient ambient-two" aria-hidden="true"></div>
 
@@ -167,7 +170,7 @@
 
 
 
-            <!-- ================= SEARCH ================= -->
+            <!-- Search form là hook của index.js; dropdown nhận tên/nhãn địa lý, còn tọa độ đi riêng trong dữ liệu. -->
 
             <div class="home-search-wrap">
                 <form
@@ -227,7 +230,7 @@
 
 
 
-            <!-- ================= QUICK CITIES ================= -->
+            <!-- Nút phổ biến gửi data-city cho handler để chọn card có sẵn thay vì nhập tên thủ công. -->
 
             <div
                 class="quick-cities"
@@ -268,7 +271,7 @@
 
 
 
-        <!-- ================= WEATHER CAROUSEL ================= -->
+        <!-- Carousel gồm các .weather-card; data-city là khóa đồng bộ với map và link forecast. -->
 
         <section
             class="weather-visual"
@@ -279,7 +282,7 @@
             <div class="card-stack">
 
 
-                <!-- ================= CARD 1 ================= -->
+                <!-- Card ban đầu trong HTML là fallback; index.js thay số liệu sau khi API trả weather/forecast. -->
 
                 <article
                     class="weather-card is-active"
@@ -1228,7 +1231,7 @@
 
 
 
-            <!-- ================= CAROUSEL CONTROLS ================= -->
+            <!-- Nút trước/sau và #carousel-current điều khiển/hiển thị vị trí card do index.js quản lý. -->
 
             <div class="carousel-controls">
 
@@ -1301,6 +1304,7 @@
 
     </footer>
 </div>
+    <!-- SDK Firebase phải đứng trước config; place_search phải đứng trước index.js vì home gọi helper dùng chung. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

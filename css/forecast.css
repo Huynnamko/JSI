@@ -7,6 +7,8 @@
 
 :root {
 
+    /* Shared forecast palette and header sizing; cards and highlights reuse these tokens at every breakpoint. */
+
     --navy: #464B71;
     --navy-dark: #343958;
 
@@ -690,26 +692,38 @@ h2 {
 }
 
 
+/* Fixed icon boxes prevent OpenWeather PNGs from shifting forecast-card heights as conditions change. */
 .forecast-card .weather-symbol {
 
     margin:
         25px 0
         18px;
 
-    display: inline-block;
-    color: var(--yellow-light);
-    font-size: 47px;
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
-    line-height: 1;
-    text-shadow:
-        0 3px 0 rgba(70, 75, 113, .2);
+    display: grid;
+    height: 64px;
+    place-items: center;
 
 }
 
 .summary-top .weather-symbol {
-    display: inline-block;
-    line-height: 1;
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+    display: grid;
+    height: 64px;
+    place-items: center;
+    width: 64px;
+}
+
+/* OpenWeather returns transparent 100px assets; contain them in a stable box and soften the edge with a shadow. */
+.openweather-icon {
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(70, 75, 113, .22));
+    height: 64px;
+    object-fit: contain;
+    width: 64px;
+}
+
+.summary-top .openweather-icon {
+    height: 64px;
+    width: 64px;
 }
 
 
@@ -814,6 +828,7 @@ h2 {
    HIGHLIGHT LAYOUT
 ========================================================= */
 
+/* One summary card is centered in a single track so desktop space is balanced instead of reserving an empty column. */
 .highlight-layout {
 
     display: grid;
@@ -861,7 +876,7 @@ h2 {
 
     display: grid;
 
-    grid-template-columns: 48px 1fr;
+    grid-template-columns: 64px 1fr;
 
     align-items: center;
 
@@ -1081,6 +1096,8 @@ h2 {
 
 @media (max-width: 1000px) {
 
+    /* Tablet header/card sizing changes while the highlights card retains its centered max-width. */
+
     :root {
         --header-height: 78px;
     }
@@ -1123,12 +1140,6 @@ h2 {
     }
 
 
-    .daily-summary {
-
-        width: 100%;
-
-    }
-
 }
 
 
@@ -1137,6 +1148,8 @@ h2 {
 ========================================================= */
 
 @media (max-width: 900px) {
+
+    /* Collapse multi-column summaries and navigation when the content no longer fits comfortably. */
 
     .main-nav {
         display: none;
@@ -1155,6 +1168,8 @@ h2 {
 ========================================================= */
 
 @media (max-width: 700px) {
+
+    /* Narrow layout stacks headings/tabs and reduces carousel card widths for touch scrolling. */
 
     :root {
         --header-height: 78px;
@@ -1378,6 +1393,8 @@ h2 {
 ========================================================= */
 
 @media (max-width: 450px) {
+
+    /* Small-phone refinements prevent the header, metrics, and forecast cards from overflowing. */
 
     .brand > span:last-child {
 

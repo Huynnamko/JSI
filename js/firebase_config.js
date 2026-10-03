@@ -1,4 +1,5 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Cấu hình dự án Firebase dùng chung cho các trang đăng nhập, đăng ký và hồ sơ.
+// Tệp này phải được nạp sau các SDK Firebase compat trong HTML; thông tin client config không thay thế Firebase Security Rules.
 const firebaseConfig = {
   apiKey: "AIzaSyBTpCV09nKaynIpI7id79UzRfPGCwLTCf8",
   authDomain: "spck-jsi-9ec00.firebaseapp.com",
@@ -9,13 +10,14 @@ const firebaseConfig = {
   measurementId: "G-KNCMQ8C5RD"
 };
 
+// Khởi tạo app một lần để các script trang dùng chung cùng project và cùng trạng thái đăng nhập.
 firebase.initializeApp(firebaseConfig);
 
-// Initialize Firebase Authentication and get a reference to the service
+// Dịch vụ xác thực xử lý đăng nhập email/mật khẩu, Google và cập nhật thông tin tài khoản.
 const auth = firebase.auth();
 
-// Initialize Cloud Firestore and get a reference to the service
+// Firestore lưu hồ sơ người dùng; quyền truy cập từng tài liệu phụ thuộc cấu hình Rules của project.
 const db = firebase.firestore();
 
-// Initialize Cloud Storage and get a reference to the service
+// Storage sẵn sàng cho các tính năng lưu tệp nếu các trang sử dụng dịch vụ này.
 const storage = firebase.storage();

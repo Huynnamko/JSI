@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Profile</title>
-    <link rel="stylesheet" href="../css/profile.css">
+    <!-- Profile cần session gate và CSS riêng; dữ liệu account được điền bởi js/profile.js. -->
+    <link rel="stylesheet" href="../css/profile.css?v=2">
     <script src="../js/check_session.js"></script>
     <script src="../js/location_label.js"></script>
 </head>
@@ -32,12 +33,14 @@
         <main class="page">
             <div class="layout">
                 <section id="profile">
+                    <!-- Vùng hồ sơ duy nhất: các id phía dưới liên kết trực tiếp với renderer và editor trong profile.js. -->
                     <article class="profile-card">
                         <div class="profile-head">
                             <div>
                                 <h2>Account details</h2><span class="status">WeFo member</span>
                             </div>
                         </div>
+                        <!-- Các span value được thay bằng input/select ở chế độ Edit và phục hồi sau khi lưu. -->
                         <div class="details">
                             <div><span class="label">Full name</span><span id="profile-name" class="value">Loading...</span></div>
                             <div><span class="label">Email address</span><span id="profile-email" class="value">Loading...</span></div>
@@ -51,24 +54,10 @@
                         </div>
                     </article>
                 </section>
-                <aside id="premium" class="premium-card">
-                    <p class="eyebrow">Go further</p>
-                    <h2>Unlock the Premium experience.</h2>
-                    <p class="premium-copy">More inspiration, more connections, and a space made entirely for you.</p>
-                    <ul class="benefits">
-                        <li>Access all exclusive content</li>
-                        <li>Ad-free experience</li>
-                        <li>Priority support from WeFo</li>
-                    </ul>
-                    <div class="price-row">
-                        <div class="price">49,000 VND <small>/ month</small></div><button id="premiumButton"
-                            type="button">Get Premium</button>
-                    </div>
-                    <p id="premiumNote" class="note" role="status"></p>
-                </aside>
             </div>
         </main>
     </div>
+    <!-- Firebase Auth/Firestore phải được khởi tạo trước profile.js để đọc và cập nhật hồ sơ theo UID. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

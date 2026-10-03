@@ -1,7 +1,10 @@
+// HOME: khởi tạo carousel, tìm địa điểm và dữ liệu thời tiết sau khi HTML đã sẵn sàng.
 document.addEventListener('DOMContentLoaded', () => {
+    // API key phục vụ request trực tiếp từ trình duyệt; cần giới hạn domain/quota tại nhà cung cấp.
     const apiKey = '5634849698f284eba828945eec5edfee';
     const defaultCity = 'Ho Chi Minh';
 
+    // Các phần tử được giữ lại một lần để những lần cập nhật card không phải truy vấn DOM lặp lại.
     const cards = Array.from(document.querySelectorAll('.weather-card'));
     const prevButton = document.querySelector('.carousel-prev');
     const nextButton = document.querySelector('.carousel-next');
@@ -17,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let latestHomeSearchRequest = 0;
     let homeSearchTimer = null;
 
+    // Trang không có carousel thì không đăng ký các handler riêng của home.
     if (!cards.length) {
         return;
     }
@@ -26,8 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
         activeIndex = 0;
     }
 
+    // Chỉ số carousel quay vòng để nút trước/sau luôn hoạt động ở hai đầu danh sách.
     const clampIndex = (index) => (index + cards.length) % cards.length;
 
+    // Tạo hiệu ứng xếp lớp theo khoảng cách của card với card đang chọn.
     const getCardTransform = (distance) => {
         const absoluteDistance = Math.abs(distance);
 
@@ -44,9 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return `translate3d(${x}px, ${y}px, ${z}px) rotate(${rotation}deg)`;
     };
 
+    // Card càng xa vị trí đang chọn thì càng mờ và tối, nhưng vẫn giữ mức tối thiểu để nhận biết carousel.
     const getCardOpacity = (distance) => Math.max(0.38, 1 - Math.abs(distance) * 0.2);
     const getCardBrightness = (distance) => Math.max(0.82, 1 - Math.abs(distance) * 0.1);
 
+    // Giữ tên trong header nhất quán với các tên tiếng Anh đang dùng ở những card có sẵn.
     const updateLocationLabel = (city) => {
         if (locationLabel && city) {
             const cityAliases = {
@@ -58,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Hiển thị thời điểm dữ liệu được cập nhật theo múi giờ và định dạng của trình duyệt.
     const updateLastUpdated = () => {
         if (lastUpdated) {
             lastUpdated.textContent = new Intl.DateTimeFormat([], {
@@ -67,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Map dùng chính các thành phố trên home làm danh sách được chọn; vì vậy luôn lưu từ DOM card hiện tại.
     const persistCityList = () => {
         const cityNames = cards
             .map((card) => card.dataset.city)
@@ -75,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('wefo-map-cities', JSON.stringify(cityNames));
     };
 
+    // Chia sẻ điều kiện, nhiệt độ, icon và tọa độ hiện tại với map/forecast qua localStorage.
     const persistMapWeather = (city, weather) => {
         try {
             const savedConditions = JSON.parse(localStorage.getItem('wefo-map-weather') || '{}');
@@ -95,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Hủy hiệu lực request đang chờ và đóng dropdown khi người dùng xóa query, nhấn Escape hoặc chọn nơi.
     const hideHomeSuggestions = () => {
         latestHomeSearchRequest += 1;
         if (homeSuggestionsList) {
@@ -104,10 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput?.setAttribute('aria-expanded', 'false');
     };
 
+    // Dùng chung bộ chuẩn hóa và khử trùng lặp địa điểm với trang map.
     const fetchHomePlaceSuggestions = async (query) => {
         return window.WeFoPlaceSearch.search(query);
     };
 
+    // Tải gợi ý bất đồng bộ; requestId ngăn response cũ ghi đè query mới hơn.
     const renderHomeSuggestions = async (query) => {
         if (!homeSuggestionsList || !searchInput) return;
 
@@ -150,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.setAttribute('aria-expanded', 'true');
     };
 
+    // Đồng bộ class/style/link của mọi card, lưu danh sách thành phố cho map và cập nhật bộ đếm.
     const updateCarousel = (nextIndex) => {
         activeIndex = clampIndex(nextIndex);
 
@@ -177,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Điểm vào chung cho nút điều hướng, quick city và thao tác vuốt card.
     const goToCard = (targetIndex) => {
         updateCarousel(targetIndex);
     };
@@ -193,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Cho phép vuốt ngang trên card, nhưng không giành thao tác đang nhắm vào link, nút hoặc input.
     cards.forEach((card) => {
         let startX = 0;
         let isPointerTracking = false;
@@ -226,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Bộ định dạng dùng chung để số liệu từ API giữ cùng quy ước trên tất cả card.
     const formatTemp = (value) => `${Math.round(value)}°`;
     const formatWind = (value) => `${Math.round(value)} km/h`;
     const formatTime = (date) => new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -235,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         day: 'numeric'
     }).format(new Date(date));
 
+    // Chuyển nhóm điều kiện OpenWeather thành class của Weather Icons đang dùng trên home.
     const getWeatherIconClass = (main, isDay = true) => {
         const code = (main || '').toLowerCase();
 
@@ -259,6 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return mapping[code] || (isDay ? 'wi-day-cloudy' : 'wi-night-alt-cloudy');
     };
 
+    // Dừng request sớm nếu cấu hình key chưa được thay bằng key hợp lệ.
     const ensureApiKey = () => {
         if (!apiKey || apiKey === 'API_KEY') {
             console.warn('OpenWeather API key is not configured. Replace API_KEY in js/index.js with a valid key.');
@@ -267,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     };
 
+    // Cập nhật card bằng dữ liệu hiện tại và bốn mốc dự báo theo giờ; text người dùng được ghi bằng textContent.
     const renderCardWeather = (card, weather, forecast, displayCity) => {
         if (!card || !weather) return;
 
@@ -343,6 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Lấy thời tiết hiện tại và forecast song song; dùng lat/lon khi địa điểm được chọn từ gợi ý geocoder.
     const fetchWeatherData = async (city, coordinates) => {
         if (!ensureApiKey()) {
             return { error: 'service' };
@@ -377,6 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Ranh giới giữa request và render một card; giữ nguyên lỗi để caller quyết định thông báo phù hợp.
     const loadCardWeather = async (card, city, coordinates) => {
         const data = await fetchWeatherData(city, coordinates);
 
@@ -388,6 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     };
 
+    // Chọn thành phố mới cho card đang hoạt động; requestId bỏ qua kết quả cũ nếu người dùng đổi lựa chọn nhanh.
     const loadCityWeather = async (city, coordinates) => {
         const resolvedCity = city || defaultCity;
         const requestId = ++latestCityRequest;
@@ -427,6 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     };
 
+    // Quick city chuyển carousel tới card tương ứng rồi tải điều kiện hiện tại cho thành phố đó.
     quickCityButtons.forEach((button) => {
         button.addEventListener('click', () => {
             const cityName = button.dataset.city;
@@ -440,6 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Tìm kiếm home có debounce để giảm request, hỗ trợ phím Escape/ArrowDown và chọn địa điểm bằng tọa độ.
     if (searchForm && searchInput) {
         searchInput.addEventListener('input', () => {
             searchStatus.textContent = '';
@@ -470,6 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Submit vẫn cho phép tra tên người dùng nhập trực tiếp khi họ không chọn gợi ý.
         searchForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const typedCity = searchInput.value.trim();
@@ -499,6 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Khởi động carousel theo trạng thái markup trước, sau đó ưu tiên thành phố đã lưu từ lần dùng trước.
     persistCityList();
     updateCarousel(activeIndex);
     const savedCity = localStorage.getItem('wefo-selected-city') || defaultCity;
@@ -510,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateLocationLabel(savedCity);
 
+    // Tải thời tiết ban đầu cho toàn bộ card song song để home và map có cùng snapshot mới nhất.
     Promise.all(cards.map((card) => loadCardWeather(card, card.dataset.city)))
         .then(() => {
             const currentSavedCity = localStorage.getItem('wefo-selected-city') || defaultCity;
