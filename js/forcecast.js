@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeDayMode = 'tomorrow';
     let currentWeatherData = null;
     let currentForecastData = null;
+    let currentCityLabel = '';
 
     const heroTitle = document.querySelector('.hero-copy h1');
     const heroMeta = document.querySelector('.hero-meta');
@@ -19,24 +20,28 @@ document.addEventListener('DOMContentLoaded', () => {
         minute: '2-digit'
     });
 
-    const getWeatherIconClass = (main, isDay = true) => {
-        const code = (main || '').toLowerCase();
-        const mapping = {
-            clear: isDay ? 'wi-day-sunny' : 'wi-night-clear',
-            clouds: isDay ? 'wi-day-cloudy' : 'wi-night-alt-cloudy',
-            rain: 'wi-rain',
-            drizzle: 'wi-sprinkle',
-            thunderstorm: 'wi-thunderstorm',
-            snow: 'wi-snow',
-            mist: 'wi-fog',
-            fog: 'wi-fog',
-            haze: 'wi-day-haze',
-            smoke: 'wi-smoke',
-            dust: 'wi-dust',
-            sand: 'wi-sandstorm'
-        };
+    const getWeatherSymbol = (weather) => {
+        const condition = (weather?.main || '').toLowerCase();
+        const iconCode = weather?.icon || '';
 
-        return mapping[code] || (isDay ? 'wi-day-cloudy' : 'wi-night-alt-cloudy');
+        if (condition.includes('thunderstorm')) return '⛈️';
+        if (condition.includes('drizzle') || condition.includes('rain')) return '🌧️';
+        if (condition.includes('snow')) return '❄️';
+        if (['mist', 'smoke', 'haze', 'dust', 'fog', 'sand', 'ash'].includes(condition)) return '🌫️';
+        if (condition === 'clear') return '☀️';
+        if (condition === 'clouds') return iconCode.startsWith('02') ? '⛅' : '☁️';
+        return '☁️';
+    };
+
+    const setWeatherSymbol = (node, weather, small = false) => {
+        if (!node) return;
+
+        node.className = small ? 'weather-symbol small' : 'weather-symbol';
+        node.textContent = getWeatherSymbol(weather);
+        node.style.fontSize = '30px';
+        node.style.color = '';
+        node.setAttribute('role', 'img');
+        node.setAttribute('aria-label', weather?.description || weather?.main || 'Cloudy');
     };
 
     const getDateLabel = (dateKey) => {
@@ -74,6 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const persistCurrentWeather = (city, weather) => {
+        try {
+            const savedConditions = JSON.parse(localStorage.getItem('wefo-map-weather') || '{}');
+            const weatherByCity = savedConditions && typeof savedConditions === 'object' && !Array.isArray(savedConditions)
+                ? savedConditions
+                : {};
+            weatherByCity[city] = {
+                condition: weather.weather?.[0]?.description || 'Weather update',
+                temp: Math.round(weather.main?.temp ?? 0),
+                icon: weather.weather?.[0]?.icon || ''
+            };
+            localStorage.setItem('wefo-map-weather', JSON.stringify(weatherByCity));
+        } catch (error) {
+            console.warn('Unable to save forecast weather:', error);
+        }
+    };
+
     const ensureApiKey = () => {
         if (!apiKey || apiKey === 'API_KEY') {
             console.warn('OpenWeather API key is not configured.');
@@ -86,8 +108,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ensureApiKey()) return null;
 
         try {
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
-            const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+            let coordinates;
+            try {
+                const savedWeather = JSON.parse(localStorage.getItem('wefo-map-weather') || '{}')[city];
+                if (Array.isArray(savedWeather?.coords) && savedWeather.coords.length === 2 && savedWeather.coords.every(Number.isFinite)) {
+                    coordinates = savedWeather.coords;
+                }
+            } catch (error) {
+                coordinates = null;
+            }
+
+            const locationQuery = coordinates
+                ? `lat=${coordinates[0]}&lon=${coordinates[1]}`
+                : `q=${encodeURIComponent(city)}`;
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?${locationQuery}&appid=${apiKey}&units=metric`;
+            const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?${locationQuery}&appid=${apiKey}&units=metric`;
 
             const [weatherRes, forecastRes] = await Promise.all([
                 fetch(weatherUrl),
@@ -171,7 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const low = Math.min(...temperatures);
             const feelsLike = pick.main?.feels_like ?? pick.main?.temp ?? 0;
             const iconNode = card.querySelector('.weather-symbol');
-            const iconClass = getWeatherIconClass(weather?.main || 'Clear', true);
             const dayNode = card.querySelector('.forecast-day');
             const dateNode = card.querySelector('.forecast-date');
 
@@ -182,11 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 dateNode.dateTime = dateKey;
                 dateNode.textContent = getDateMonthLabel(dateKey);
             }
-            if (iconNode) {
-                iconNode.className = `weather-symbol wi ${iconClass}`;
-                iconNode.style.fontSize = '30px';
-                iconNode.style.color = '#f6b84d';
-            }
+            setWeatherSymbol(iconNode, weather);
             card.querySelector('strong').textContent = formatTemp(high);
             card.querySelector(':scope > span').textContent = formatTemp(low);
             card.querySelector('footer b').textContent = formatTemp(feelsLike);
@@ -213,26 +243,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return forecast.list[mode === 'today' ? 0 : Math.min(8, forecast.list.length - 1)] || forecast.list[0];
     };
 
-    const renderDailySummary = (weather, forecast, mode = activeDayMode) => {
+    const renderDailySummary = (weather, forecast, mode = activeDayMode, displayCity = '') => {
         const summaryIcon = document.querySelector('.summary-top .weather-symbol');
         const summaryTitle = document.querySelector('.summary-top strong');
         const summaryTemp = document.querySelector('.summary-top > b');
         const summaryCity = document.querySelector('.summary-top small');
         const highlightsTitle = document.getElementById('highlights-title');
 
-        const cityName = weather.name || 'City';
+        const cityName = displayCity || weather.name || 'City';
         const target = getDayForecastSnapshot(forecast, mode) || forecast?.list?.[0];
-        const condition = (target?.weather?.[0]?.main || weather.weather?.[0]?.main || 'Clear');
-        const iconClass = getWeatherIconClass(condition, true);
+        const summaryWeather = target?.weather?.[0] || weather.weather?.[0];
         const tempValue = target?.main?.temp ?? weather.main?.temp ?? 0;
         const humidity = `${target?.main?.humidity ?? weather.main?.humidity ?? 0}%`;
         const wind = `${Math.round(target?.wind?.speed ?? weather.wind?.speed ?? 0)} km/h`;
 
-        if (summaryIcon) {
-            summaryIcon.className = `weather-symbol small wi ${iconClass}`;
-            summaryIcon.style.fontSize = '30px';
-            summaryIcon.style.color = '#f6b84d';
-        }
+        setWeatherSymbol(summaryIcon, summaryWeather, true);
 
         if (summaryTitle) summaryTitle.textContent = cityName;
         if (summaryTemp) summaryTemp.textContent = formatTemp(tempValue);
@@ -252,13 +277,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     };
 
-    const renderCurrentWeather = ({ weather, forecast }) => {
+    const renderCurrentWeather = ({ weather, forecast }, displayCity = '') => {
         if (!weather || !forecast) return;
 
         currentWeatherData = weather;
         currentForecastData = forecast;
 
-        const cityName = `${weather.name || 'City'}, ${weather.sys?.country || ''}`.trim();
+        const cityName = `${displayCity || weather.name || 'City'}, ${weather.sys?.country || ''}`.trim();
         const condition = weather.weather?.[0]?.description || 'Current weather';
 
         if (heroTitle) heroTitle.textContent = '5-Day Forecast';
@@ -273,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setText('.section-heading h2', 'Weather Forecast');
         setText('.section-kicker', '5-Day Forecast');
         renderForecastCards(forecast);
-        renderDailySummary(weather, forecast, activeDayMode);
+        renderDailySummary(weather, forecast, activeDayMode, displayCity);
     };
 
     const setupDayTabs = () => {
@@ -288,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tabButtons.forEach((item) => item.classList.toggle('selected', item === button));
 
                 if (currentWeatherData && currentForecastData) {
-                    renderDailySummary(currentWeatherData, currentForecastData, activeDayMode);
+                    renderDailySummary(currentWeatherData, currentForecastData, activeDayMode, currentCityLabel);
                 }
             });
         });
@@ -298,7 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCity = city || localStorage.getItem('wefo-selected-city') || defaultCity;
         const result = await getWeatherData(selectedCity);
         if (result) {
-            renderCurrentWeather(result);
+            currentCityLabel = selectedCity;
+            persistCurrentWeather(selectedCity, result.weather);
+            renderCurrentWeather(result, selectedCity);
             setupDayTabs();
         }
     };

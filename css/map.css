@@ -385,6 +385,12 @@ h1 em {
     outline: none;
 }
 
+.search-empty {
+    color: #647087;
+    font-size: 13px;
+    padding: 12px;
+}
+
 #map {
     background: #dff3f2;
     border-radius: 16px;
@@ -398,6 +404,103 @@ h1 em {
     background: #dff3f2;
     height: 100%;
     width: 100%;
+}
+
+.weather-map-div-icon {
+    background: transparent;
+    border: 0;
+}
+
+.weather-map-symbol {
+    display: block;
+    filter: drop-shadow(0 2px 3px rgba(24, 39, 54, .32));
+    height: 44px;
+    position: relative;
+    width: 44px;
+}
+
+.weather-map-symbol--sun::before {
+    background: repeating-conic-gradient(#f0a92f 0deg 13deg, transparent 13deg 45deg);
+    border-radius: 50%;
+    content: "";
+    inset: 1px;
+    position: absolute;
+}
+
+.weather-map-symbol--sun::after {
+    background: #ffd166;
+    border: 2px solid #fff7d8;
+    border-radius: 50%;
+    content: "";
+    height: 19px;
+    left: 12px;
+    position: absolute;
+    top: 12px;
+    width: 19px;
+}
+
+.weather-map-symbol--cloud,
+.weather-map-symbol--rain {
+    display: block;
+}
+
+.weather-cloud {
+    background: #eef4f0;
+    border-radius: 12px;
+    height: 14px;
+    left: 5px;
+    position: absolute;
+    top: 14px;
+    width: 34px;
+}
+
+.weather-cloud::before,
+.weather-cloud::after {
+    background: inherit;
+    border-radius: 50%;
+    content: "";
+    position: absolute;
+}
+
+.weather-cloud::before {
+    height: 18px;
+    left: 5px;
+    top: -9px;
+    width: 18px;
+}
+
+.weather-cloud::after {
+    height: 14px;
+    left: 19px;
+    top: -6px;
+    width: 14px;
+}
+
+.weather-map-symbol--rain .weather-cloud {
+    background: #d9e3e2;
+}
+
+.weather-raindrops i {
+    background: #36a6d6;
+    border-radius: 4px;
+    height: 9px;
+    position: absolute;
+    top: 30px;
+    transform: rotate(24deg);
+    width: 3px;
+}
+
+.weather-raindrops i:nth-child(1) {
+    left: 12px;
+}
+
+.weather-raindrops i:nth-child(2) {
+    left: 22px;
+    top: 32px;
+}
+
+.weather-raindrops i:nth-child(3) {
+    left: 32px;
 }
 
 #map .leaflet-control-zoom {

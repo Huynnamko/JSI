@@ -699,20 +699,17 @@ h2 {
     display: inline-block;
     color: var(--yellow-light);
     font-size: 47px;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
     line-height: 1;
     text-shadow:
         0 3px 0 rgba(70, 75, 113, .2);
 
 }
 
-.weather-symbol.wi {
-    font-family: "weathericons";
-}
-
 .summary-top .weather-symbol {
     display: inline-block;
     line-height: 1;
-    font-family: "weathericons";
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
 }
 
 
@@ -821,7 +818,7 @@ h2 {
 
     display: grid;
 
-    grid-template-columns: 356px 1fr;
+    grid-template-columns: minmax(0, 1fr);
 
     gap: 24px;
 
@@ -834,6 +831,8 @@ h2 {
 
 .daily-summary {
 
+    width: min(100%, 760px);
+    justify-self: center;
     padding: 28px;
 
     border-radius: 9px;

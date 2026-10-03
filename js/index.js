@@ -9,10 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const lastUpdated = document.getElementById('last-updated');
     const searchForm = document.getElementById('search-form');
     const searchInput = document.getElementById('city');
+    const homeSuggestionsList = document.getElementById('home-search-suggestions');
     const searchStatus = document.getElementById('search-status');
     const locationLabel = document.querySelector('#location-button .location-label');
     const quickCityButtons = Array.from(document.querySelectorAll('.quick-cities button'));
     let latestCityRequest = 0;
+    let latestHomeSearchRequest = 0;
+    let homeSearchTimer = null;
 
     if (!cards.length) {
         return;
@@ -70,6 +73,81 @@ document.addEventListener('DOMContentLoaded', () => {
             .filter((city) => Boolean(city));
 
         localStorage.setItem('wefo-map-cities', JSON.stringify(cityNames));
+    };
+
+    const persistMapWeather = (city, weather) => {
+        try {
+            const savedConditions = JSON.parse(localStorage.getItem('wefo-map-weather') || '{}');
+            const weatherByCity = savedConditions && typeof savedConditions === 'object' && !Array.isArray(savedConditions)
+                ? savedConditions
+                : {};
+            weatherByCity[city] = {
+                condition: weather.weather?.[0]?.description || 'Weather update',
+                temp: Math.round(weather.main?.temp ?? 0),
+                icon: weather.weather?.[0]?.icon || '',
+                coords: Number.isFinite(weather.coord?.lat) && Number.isFinite(weather.coord?.lon)
+                    ? [weather.coord.lat, weather.coord.lon]
+                    : undefined
+            };
+            localStorage.setItem('wefo-map-weather', JSON.stringify(weatherByCity));
+        } catch (error) {
+            console.warn('Unable to save map weather conditions:', error);
+        }
+    };
+
+    const hideHomeSuggestions = () => {
+        latestHomeSearchRequest += 1;
+        if (homeSuggestionsList) {
+            homeSuggestionsList.replaceChildren();
+            homeSuggestionsList.classList.remove('is-visible');
+        }
+        searchInput?.setAttribute('aria-expanded', 'false');
+    };
+
+    const fetchHomePlaceSuggestions = async (query) => {
+        return window.WeFoPlaceSearch.search(query);
+    };
+
+    const renderHomeSuggestions = async (query) => {
+        if (!homeSuggestionsList || !searchInput) return;
+
+        const normalizedQuery = query.trim();
+        if (normalizedQuery.length < 2) {
+            hideHomeSuggestions();
+            return;
+        }
+
+        const requestId = ++latestHomeSearchRequest;
+        const matches = await fetchHomePlaceSuggestions(normalizedQuery);
+        if (requestId !== latestHomeSearchRequest) return;
+
+        homeSuggestionsList.replaceChildren();
+        if (!matches.length) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'home-search-empty';
+            emptyMessage.setAttribute('role', 'status');
+            emptyMessage.textContent = 'No places found.';
+            homeSuggestionsList.append(emptyMessage);
+        } else {
+            matches.forEach((place) => {
+                const option = document.createElement('button');
+                option.type = 'button';
+                option.className = 'home-search-suggestion';
+                option.setAttribute('role', 'option');
+                option.textContent = place.label;
+                option.addEventListener('click', () => {
+                    const selectedName = place.selectionName || place.name;
+                    searchInput.value = selectedName;
+                    searchStatus.textContent = '';
+                    hideHomeSuggestions();
+                    loadCityWeather(selectedName, place.coords);
+                });
+                homeSuggestionsList.append(option);
+            });
+        }
+
+        homeSuggestionsList.classList.add('is-visible');
+        searchInput.setAttribute('aria-expanded', 'true');
     };
 
     const updateCarousel = (nextIndex) => {
@@ -214,10 +292,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const condition = card.querySelector('.condition');
+        const description = weather.weather?.[0]?.description || 'Weather update';
         if (condition) {
-            const desc = weather.weather?.[0]?.description || 'Weather update';
-            condition.textContent = desc.charAt(0).toUpperCase() + desc.slice(1);
+            condition.textContent = description.charAt(0).toUpperCase() + description.slice(1);
         }
+        persistMapWeather(cityName, weather);
 
         const metricValues = card.querySelectorAll('.metrics strong');
         if (metricValues[0]) {
@@ -264,14 +343,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const fetchWeatherData = async (city) => {
+    const fetchWeatherData = async (city, coordinates) => {
         if (!ensureApiKey()) {
             return { error: 'service' };
         }
 
         try {
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
-            const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+            const locationQuery = coordinates
+                ? `lat=${coordinates[0]}&lon=${coordinates[1]}`
+                : `q=${encodeURIComponent(city)}`;
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?${locationQuery}&appid=${apiKey}&units=metric`;
+            const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?${locationQuery}&appid=${apiKey}&units=metric`;
 
             const [weatherRes, forecastRes] = await Promise.all([
                 fetch(weatherUrl),
@@ -295,8 +377,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const loadCardWeather = async (card, city) => {
-        const data = await fetchWeatherData(city);
+    const loadCardWeather = async (card, city, coordinates) => {
+        const data = await fetchWeatherData(city, coordinates);
 
         if (!data || data.error) {
             return data;
@@ -306,11 +388,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     };
 
-    const loadCityWeather = async (city) => {
+    const loadCityWeather = async (city, coordinates) => {
         const resolvedCity = city || defaultCity;
         const requestId = ++latestCityRequest;
         const activeCard = cards[activeIndex] || cards[0];
-        const data = await loadCardWeather(activeCard, resolvedCity);
+        const data = await loadCardWeather(activeCard, resolvedCity, coordinates);
 
         if (requestId !== latestCityRequest) {
             return;
@@ -326,7 +408,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         localStorage.setItem('wefo-selected-city', resolvedCity);
-        persistCityList();
         updateLocationLabel(resolvedCity);
         updateLastUpdated();
 
@@ -337,6 +418,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 detailsLink.href = `html/forecast.html?city=${encodeURIComponent(resolvedCity)}`;
             }
         }
+
+        persistCityList();
 
         if (searchStatus) {
             searchStatus.textContent = '';
@@ -358,6 +441,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (searchForm && searchInput) {
+        searchInput.addEventListener('input', () => {
+            searchStatus.textContent = '';
+            window.clearTimeout(homeSearchTimer);
+            const query = searchInput.value;
+            if (query.trim().length < 2) {
+                hideHomeSuggestions();
+                return;
+            }
+            homeSearchTimer = window.setTimeout(() => renderHomeSuggestions(query), 300);
+        });
+
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                hideHomeSuggestions();
+            } else if (event.key === 'ArrowDown') {
+                const firstSuggestion = homeSuggestionsList?.querySelector('.home-search-suggestion');
+                if (firstSuggestion) {
+                    event.preventDefault();
+                    firstSuggestion.focus();
+                }
+            }
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim().length >= 2) {
+                renderHomeSuggestions(searchInput.value);
+            }
+        });
+
         searchForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const typedCity = searchInput.value.trim();
@@ -365,6 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!typedCity) {
                 return;
             }
+
+            hideHomeSuggestions();
 
             const matched = cards.findIndex((card) => {
                 const cityName = card.dataset.city?.toLowerCase() || '';
@@ -376,6 +490,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             loadCityWeather(typedCity);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.home-search-wrap')) {
+                hideHomeSuggestions();
+            }
         });
     }
 

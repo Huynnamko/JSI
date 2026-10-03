@@ -169,10 +169,11 @@
 
             <!-- ================= SEARCH ================= -->
 
-            <form
-                class="search-form"
-                id="search-form"
-            >
+            <div class="home-search-wrap">
+                <form
+                    class="search-form"
+                    id="search-form"
+                >
 
                 <span
                     class="search-icon"
@@ -190,16 +191,19 @@
                 </label>
 
 
-                <input
-                    id="city"
-                    name="city"
-                    type="text"
-                    placeholder="Search city..."
-                    autocomplete="off"
-                >
+                    <input
+                        id="city"
+                        name="city"
+                        type="text"
+                        placeholder="Search city..."
+                        autocomplete="off"
+                        aria-autocomplete="list"
+                        aria-controls="home-search-suggestions"
+                        aria-expanded="false"
+                    >
 
 
-                <button type="submit">
+                    <button type="submit">
 
                     Explore
 
@@ -207,9 +211,11 @@
                         →
                     </span>
 
-                </button>
+                    </button>
 
-            </form>
+                </form>
+                <div class="home-search-suggestions" id="home-search-suggestions" role="listbox" aria-label="Place suggestions" aria-live="polite"></div>
+            </div>
 
 
             <p
@@ -1302,7 +1308,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-firestore-compat.min.js"></script>        
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-storage-compat.min.js"></script>
     <script src="js/firebase_config.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/place_search.js?v=2"></script>
+    <script src="js/index.js?v=7"></script>
 
 </body>
 
