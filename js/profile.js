@@ -1,4 +1,4 @@
-// PROFILE: các phần tử hồ sơ được cập nhật từ Firebase Auth, Firestore hoặc cache theo UID.
+// Các phần tử này dùng để hiện hoặc sửa hồ sơ; Firebase xác nhận tài khoản, Firestore và bản lưu tạm giữ thêm thông tin theo mã tài khoản.
 const profileName = document.querySelector("#profile-name");
 const profileEmail = document.querySelector("#profile-email");
 const profilePassword = document.querySelector("#profile-password");
@@ -8,7 +8,7 @@ const profileStatus = document.querySelector(".status");
 const editProfileButton = document.querySelector("#editProfileButton");
 const logoutButton = document.querySelector("#logoutButton");
 
-// currentUser là nguồn xác thực cho thao tác lưu; profileData là snapshot đang được hiển thị/chỉnh sửa.
+// currentUser là tài khoản Firebase đã xác nhận; profileData là thông tin đang dùng, isEditing cho biết đang xem hay sửa.
 let currentUser = null;
 let profileData = null;
 let isEditing = false;
@@ -22,12 +22,12 @@ const profileFields = {
 	gender: profileGender
 };
 
-// Chuẩn hóa trường trống thành nhãn dễ hiểu thay vì để UI hiển thị chuỗi rỗng.
+// Nếu thông tin bị thiếu hoặc rỗng thì hiện lời nhắc thay vì để một ô trống khó hiểu.
 function displayValue(value) {
 	return value || "Not provided";
 }
 
-// Ngày lưu dạng YYYY-MM-DD được đổi sang DD/MM/YYYY chỉ ở bước trình bày.
+// Chỉ format chuỗi ngày ISO có đúng ba phần; dữ liệu thiếu/sai định dạng được giữ nguyên thay vì đoán ngày.
 function formatBirthday(value) {
 	if (!value) {
 		return "Not provided";
@@ -42,7 +42,7 @@ function formatBirthday(value) {
 	return `${day}/${month}/${year}`;
 }
 
-// Không dùng cache của tài khoản khác; JSON lỗi được bỏ qua để có thể tải lại từ Firestore.
+// Chỉ dùng bản lưu tạm nếu mã tài khoản trùng; dữ liệu hỏng hoặc thuộc người khác bị bỏ để tránh hiện nhầm hồ sơ.
 function getCachedProfile(uid) {
 	try {
 		const cachedProfile = JSON.parse(localStorage.getItem("profile_data") || "null");
@@ -53,7 +53,7 @@ function getCachedProfile(uid) {
 	}
 }
 
-// Render bản cache trước để trang có nội dung ngay khi mạng/Firebase phản hồi chậm.
+// Dùng thông tin đăng nhập lưu trong trình duyệt để hiện trang ngay; Firebase xác nhận và bổ sung dữ liệu sau.
 function renderStoredSession() {
 	try {
 		const storedSession = JSON.parse(localStorage.getItem("user_session") || "null");
@@ -81,7 +81,7 @@ function renderStoredSession() {
 	}
 }
 
-// Chỉ cập nhật text node, không diễn giải dữ liệu tên/email thành HTML.
+// Hiện mọi giá trị dưới dạng chữ an toàn; không hiện mật khẩu thật và ghi rõ nếu tài khoản Google tự quản lý mật khẩu.
 function renderProfile(data) {
 	profileName.textContent = displayValue(data.username);
 	profileEmail.textContent = displayValue(data.email);
@@ -94,7 +94,7 @@ function renderProfile(data) {
 	}
 }
 
-// Ghép thông tin Auth (tên/email) với hồ sơ Firestore (ngày sinh/giới tính) và cache theo UID.
+// Tìm hồ sơ theo mã tài khoản rồi ghép với thông tin đăng nhập; Google lấy tên/email từ Google, tài khoản thường ưu tiên hồ sơ đã lưu.
 async function loadProfile(user) {
 	const isGoogleAccount = user.providerData.some(
 		(provider) => provider.providerId === "google.com"
@@ -136,7 +136,7 @@ async function loadProfile(user) {
 	};
 }
 
-// Tạo đúng control theo loại trường: gender dùng select, ngày sinh dùng date, các trường còn lại dùng text/email.
+// Tạo đúng loại ô cho từng thông tin: giới tính là danh sách chọn, ngày sinh là lịch, email và tên là ô nhập.
 function createEditor(field, value) {
 	if (field === "gender") {
 		const select = document.createElement("select");
@@ -158,7 +158,7 @@ function createEditor(field, value) {
 	return input;
 }
 
-// Chuyển các giá trị đang xem thành input mà không dựng HTML từ dữ liệu hồ sơ.
+// Đổi chữ đang hiện thành các ô nhập tương ứng, đổi nút sang Save và ghi nhớ để lần bấm kế tiếp lưu thay đổi.
 function startEditing() {
 	Object.entries(profileFields).forEach(([field, element]) => {
 		element.replaceChildren(createEditor(field, profileData[field]));
@@ -168,7 +168,7 @@ function startEditing() {
 	isEditing = true;
 }
 
-// Đọc giá trị mới từ các control được tạo trong startEditing.
+// Đọc nội dung người dùng nhập ở từng ô, bỏ khoảng trắng thừa đầu/cuối rồi ghép thành một bộ thông tin mới.
 function readEditedProfile() {
 	return Object.fromEntries(
 		Object.entries(profileFields).map(([field, element]) => {
@@ -178,7 +178,7 @@ function readEditedProfile() {
 	);
 }
 
-// Cập nhật Auth trước, sau đó lưu hồ sơ bổ sung vào Firestore và cache lại khi mọi bước thành công.
+// Kiểm tra tên/email, cập nhật chúng trong Firebase nếu đổi, ghi thông tin bổ sung vào Firestore rồi lưu bản dùng lại lần sau.
 async function saveProfile() {
 	const updatedProfile = readEditedProfile();
 
@@ -220,7 +220,7 @@ async function saveProfile() {
 	alert("Profile updated successfully");
 }
 
-// Nút Edit/Save dùng cùng handler và đổi hành vi dựa trên trạng thái isEditing.
+// Nút này bắt đầu sửa khi đang xem hoặc lưu khi đang sửa; nếu lưu lỗi thì hiện thông báo để người dùng thử lại.
 async function handleEditProfile() {
 	if (!isEditing) {
 		startEditing();
@@ -235,7 +235,7 @@ async function handleEditProfile() {
 	}
 }
 
-// Đăng xuất Firebase trước khi xóa session giao diện và điều hướng tới login.
+// Chỉ xóa phiên đăng nhập trong trình duyệt và về Login sau khi Firebase đăng xuất thành công.
 async function handleLogout() {
 	try {
 		await firebase.auth().signOut();
@@ -250,7 +250,7 @@ async function handleLogout() {
 editProfileButton.addEventListener("click", handleEditProfile);
 logoutButton.addEventListener("click", handleLogout);
 
-// Firebase Auth là nguồn xác nhận cuối; khi có user mới mở khả năng chỉnh sửa và tải profile server.
+// Theo dõi trạng thái đăng nhập Firebase; khi có tài khoản thì bật nút sửa và tải hồ sơ, nếu lỗi thì dùng tên/email sẵn có.
 firebase.auth().onAuthStateChanged(async (user) => {
 	if (!user) {
 		return;
@@ -277,5 +277,5 @@ firebase.auth().onAuthStateChanged(async (user) => {
 	}
 });
 
-// Hiển thị cache sớm; listener Auth phía trên sẽ thay bằng dữ liệu đã xác thực khi sẵn sàng.
+// Hiện thông tin đã lưu trước để tránh trang trống; khi Firebase trả lời thì thay bằng hồ sơ vừa xác nhận.
 renderStoredSession();

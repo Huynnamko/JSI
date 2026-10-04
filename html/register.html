@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Register</title>
-    <!-- CSS và Firebase SDK phục vụ riêng trang đăng ký; register.js dùng các class của từng input bên dưới. -->
+    <!-- Dùng kiểu dáng riêng cho đăng ký; các mã id/class giúp register.js đọc đúng thông tin người dùng nhập. -->
     <link rel="stylesheet" href="../css/register.css">
-    <link rel="stylesheet" href="../css/page-transitions.css?v=2">
-    <script src="../js/page-transition.js" defer></script>
+    <link rel="stylesheet" href="../css/page-transitions.css?v=3">
+    <script src="../js/page-transition.js?v=2" defer></script>
     <link rel="icon" href="../images/weather icon.png">
 </head>
 
@@ -20,6 +20,7 @@
             <!-- Các trường required và id/class là giao diện dữ liệu mà register.js đọc khi submit. -->
             <form id="register-form" class="form">
 
+                <!-- Tên dùng để hiển thị trên hồ sơ; email và mật khẩu dùng để tạo tài khoản đăng nhập. -->
                 <div class="field">
                     <label for="txt_name">Full Name</label>
                     <input id="txt_name" class="inp-username" type="text" placeholder="Enter your full name" required>
@@ -40,6 +41,7 @@
                     <input id="txt_confirm_password" class="inp-cf-pw" type="password" placeholder="Confirm your password" required>
                 </div>
 
+                <!-- Ngày sinh và giới tính là thông tin hồ sơ bổ sung, được lưu riêng với email và mật khẩu đăng nhập. -->
                 <div class="field">
                     <label for="txt_birthday">Birthday</label>
                     <input id="txt_birthday" class="inp-birthday" type="date" required>
@@ -61,12 +63,13 @@
 
             </form>
 
+            <!-- Link cho người đã đăng ký đi tới đăng nhập mà không submit form hiện tại. -->
             <div class="login-link">
                 <p>Already have an account? <a href="login.html">Login here</a></p>
             </div>
         </div>
     </div>
-    <!-- Nạp Auth/Firestore/Storage trước cấu hình và handler tạo tài khoản. -->
+    <!-- Tải Firebase và cấu hình trước mã đăng ký để tạo tài khoản, rồi lưu thêm thông tin hồ sơ của người dùng. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

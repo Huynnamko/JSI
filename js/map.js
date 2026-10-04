@@ -1,5 +1,6 @@
-// MAP: chờ DOM và Leaflet trước khi tạo bản đồ, tile layer, marker, search và danh sách thành phố.
+// Chờ trang dựng xong rồi mới tạo bản đồ, thêm dấu thời tiết, bật tìm kiếm và xin vị trí thiết bị.
 document.addEventListener('DOMContentLoaded', () => {
+    // Tìm các phần tử giao diện; chỉ tiếp tục nếu trang có khung bản đồ và thư viện Leaflet đã tải.
     const mapElement = document.getElementById('map');
     const searchInput = document.querySelector('.search');
     const locationButton = document.getElementById('location-button');
@@ -10,9 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Tọa độ này chỉ là tâm nhìn toàn cầu; city chưa có tọa độ sẽ không được đặt marker tại đây.
+    // Tọa độ thế giới chỉ làm góc nhìn ban đầu; không dùng thay tọa độ thật của thành phố chưa tìm được.
     const defaultCity = { name: 'World', coords: [20, 0], temp: 22, condition: 'Global overview' };
-    // Danh mục dự phòng để map vẫn có tọa độ/điều kiện cơ bản trước khi dữ liệu live được lưu.
+    // Bảng tên quen thuộc cung cấp tọa độ và mô tả tạm nếu bộ nhớ trình duyệt chưa có dữ liệu mới.
     const cityCatalog = {
         Hanoi: { coords: [21.0278, 105.8342], temp: 31, condition: 'Partly sunny' },
         'Da Nang': { coords: [16.0544, 108.2022], temp: 33, condition: 'Clear skies' },
@@ -27,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Singapore': { coords: [1.3521, 103.8198], temp: 31, condition: 'Humid and warm' },
         'Cape Town': { coords: [-33.9249, 18.4241], temp: 21, condition: 'Clear skies' }
     };
-    // Đọc snapshot thời tiết từ home/forecast; dữ liệu hỏng được thay bằng object rỗng thay vì chặn map.
+    // Đọc thông tin thời tiết trang Today/dự báo đã lưu; nếu dữ liệu hỏng hoặc sai dạng thì dùng danh sách rỗng.
     const getSavedWeatherConditions = () => {
         try {
             const savedConditions = JSON.parse(localStorage.getItem('wefo-map-weather') || '{}');
@@ -39,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const savedWeatherConditions = getSavedWeatherConditions();
-    // Danh sách marker chính lấy từ các card home; tên được lọc, khử trùng lặp và ghép với snapshot mới nhất.
+    // Lấy tên thành phố từ trang Today, bỏ tên rỗng/trùng và ghép thông tin đã lưu để chuẩn bị các dấu trên bản đồ.
     const getSelectedCities = () => {
         try {
             const savedCities = JSON.parse(localStorage.getItem('wefo-map-cities') || '[]');
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const savedCondition = typeof savedWeather === 'string'
                         ? savedWeather
                         : savedWeather?.condition;
-                    // Chỉ nhận cặp lat/lon hợp lệ; tọa độ thiếu hoặc ngoài phạm vi sẽ được resolve riêng.
+                    // Chỉ nhận đủ vĩ độ [-90,90] và kinh độ [-180,180]; thiếu hoặc sai thì tìm tọa độ theo tên.
                     const savedCoordinates = Array.isArray(savedWeather?.coords) &&
                         savedWeather.coords.length === 2 &&
                         savedWeather.coords.every(Number.isFinite) &&
@@ -88,25 +89,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedCities = getSelectedCities();
     const defaultCoords = defaultCity.coords;
 
-    // Mở ở chế độ toàn cầu; click danh sách hoặc kết quả tìm kiếm sẽ phóng tới vị trí cụ thể.
+    // Bắt đầu với toàn cảnh thế giới; chọn thành phố hoặc kết quả tìm kiếm sẽ đưa bản đồ tới đó.
     const map = L.map('map', {
         zoomControl: true,
         scrollWheelZoom: true
     }).setView(defaultCoords, 2);
 
-    // Nền bản đồ OpenStreetMap có attribution bắt buộc ở góc bản đồ.
+    // Thêm ảnh nền OpenStreetMap và dòng ghi nguồn ở góc theo yêu cầu sử dụng dữ liệu bản đồ.
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
+    // Gom các dấu thời tiết thành phố vào một nhóm riêng để quản lý tách biệt khỏi ảnh nền bản đồ.
     const markersLayer = L.layerGroup().addTo(map);
     const markerMap = new Map();
 
-    // Cùng tên nhưng khác tọa độ vẫn là hai địa điểm riêng, nên key marker gồm cả tên và lat/lon.
+    // Ghép tên và tọa độ thành mã nhận diện; hai nơi trùng tên nhưng khác vị trí vẫn có dấu riêng.
     const getMarkerKey = (city) => `${city.name}:${city.coords[0].toFixed(5)}:${city.coords[1].toFixed(5)}`;
 
-    // Chọn biểu tượng nắng/mưa/mây từ mô tả điều kiện hiện có trên card.
+    // Chọn biểu tượng từ các từ trong mô tả; kiểm tra mưa trước nắng để câu có cả hai từ không bị nhận nhầm.
     const getWeatherIconType = (condition = '') => {
         const text = condition.toLowerCase();
         if (/rain|drizzle|shower|thunderstorm/.test(text)) {
@@ -118,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'cloud';
     };
 
-    // Tạo nội dung icon Leaflet theo loại thời tiết; popup hiển thị chi tiết khi người dùng chọn marker.
+    // Tạo biểu tượng thời tiết và gắn tên dễ đọc để trình đọc màn hình cũng thông báo đó là mưa, nắng hay mây.
     const getWeatherIconMarkup = (condition) => {
         const iconType = getWeatherIconType(condition);
         const iconLabels = { rain: 'Rain', sun: 'Sunny', cloud: 'Cloudy' };
@@ -130,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<span class="weather-map-symbol weather-map-symbol--${iconType}" role="img" aria-label="${iconLabels[iconType]}">${iconContent}</span>`;
     };
 
-    // Tạo tối đa một marker cho mỗi cặp tên/tọa độ để việc render lại danh sách không nhân bản marker.
+    // Bỏ qua nơi thiếu tên/vị trí; chỉ thêm dấu nếu nơi đó chưa có để cập nhật danh sách không tạo dấu trùng.
     const ensureCityMarker = (city) => {
         if (!city || !city.name || !city.coords) {
             return;
@@ -151,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Gộp các lần resolve đồng thời cùng thành phố để tránh gửi request trùng khi UI khởi động và bị click.
+    // Ghi nhớ việc đang tìm tọa độ theo tên để nhiều thao tác cùng lúc không gửi yêu cầu tra cứu trùng nhau.
     const coordinateResolutionRequests = new Map();
     const resolveCityCoordinates = (city) => {
         if (city.coords) {
@@ -161,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return coordinateResolutionRequests.get(city.name);
         }
 
-        // Dùng geocoder chung nếu dữ liệu cũ chỉ lưu tên; sau đó cache lại tọa độ để lần mở sau không phải tra lại.
+        // Chỉ tìm vị trí khi thành phố chưa có; ưu tiên kết quả khớp tên, nếu không có thì lấy kết quả đầu và lưu tọa độ.
         const request = window.WeFoPlaceSearch.search(city.name).then((places) => {
             const place = places.find((result) => result.selectionName === city.name || result.label === city.name) || places[0];
             if (!place) return null;
@@ -192,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return request;
     };
 
-    // Chấm màu trong danh sách là bản tóm tắt cùng nhóm điều kiện với icon marker.
+    // Màu chấm cạnh tên thành phố cho biết mưa, nhiều mây hay nắng giống biểu tượng trên bản đồ.
     const getWeatherDotClass = (condition = '') => {
         const text = condition.toLowerCase();
         if (text.includes('rain')) {
@@ -204,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'sun';
     };
 
-    // Vẽ card bên cạnh map và gắn hành vi zoom tới marker; các thành phố tìm riêng không tự thêm vào list home.
+    // Tạo nút cho từng thành phố; nơi đang xem được đánh dấu, bấm nút sẽ phóng bản đồ và mở thông tin thời tiết.
     const renderCityList = (activeName = defaultCity.name) => {
         if (!selectedCityList) {
             return;
@@ -251,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ensureCityMarker(city);
     });
 
-    // Khôi phục marker cho dữ liệu localStorage cũ không có tọa độ; không dùng tọa độ giả làm vị trí thành phố.
+    // Tìm lần lượt vị trí còn thiếu trong danh sách cũ để không gửi nhiều yêu cầu tra cứu cùng lúc.
     const resolveMissingCityCoordinates = async () => {
         for (const city of selectedCities) {
             if (!city.coords) {
@@ -261,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     resolveMissingCityCoordinates();
 
-    // Marker riêng cho vị trí thiết bị, không trộn với các marker thời tiết của thành phố.
+    // Vị trí thiết bị là vòng tròn vàng riêng, khác với các dấu thời tiết thành phố.
     const currentMarker = L.circleMarker(defaultCoords, {
         radius: 8,
         color: '#FFD166',
@@ -271,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 1
     }).addTo(map);
 
-    // Di chuyển marker vị trí thiết bị và map tới lat/lon do trình duyệt cung cấp.
+    // Đặt dấu tại vĩ độ/kinh độ trình duyệt cung cấp, mở hộp thông tin rồi đưa bản đồ tới nơi đó.
     const setCurrentLocation = (lat, lng, zoom = 2) => {
         const coordinates = [lat, lng];
         currentMarker.setLatLng(coordinates);
@@ -280,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentMarker.openPopup();
     };
 
-    // Xin quyền định vị; nếu không có API hoặc người dùng từ chối thì giữ góc nhìn toàn cầu.
+    // Xin quyền lấy vị trí; nếu trình duyệt không hỗ trợ hoặc người dùng từ chối thì giữ góc nhìn toàn cầu.
     const useCurrentLocation = () => {
         if (!navigator.geolocation) {
             setCurrentLocation(defaultCoords[0], defaultCoords[1], 2);
@@ -303,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     };
 
-    // Gộp city đang chọn với catalog và bỏ tên đã xuất hiện; helper giữ sẵn danh sách cho các lựa chọn nội bộ.
+    // Ghép các thành phố đang dùng với bảng tên dự phòng, bỏ tên trùng và trả danh sách để tạo lựa chọn nội bộ.
     const allCitySearchOptions = () => {
         const catalogEntries = Object.keys(cityCatalog).map((cityName) => ({
             name: cityName,
@@ -327,10 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let latestSearchRequest = 0;
 
-    // Home và map dùng chung geocoder để quy tắc tên, tọa độ và khử trùng lặp nhất quán.
+    // Dùng chung chức năng tìm địa điểm với trang Today để cách xử lý tên và vị trí luôn giống nhau.
     const fetchLocationSuggestions = (query) => window.WeFoPlaceSearch.search(query);
 
-    // Cập nhật dropdown bất đồng bộ; requestId ngăn kết quả của query cũ ghi đè kết quả mới.
+    // Tạo danh sách từ tên đã bỏ khoảng trắng; chỉ nhận kết quả mới nhất và báo menu mở/đóng cho trình đọc màn hình.
     const renderSuggestions = async (query = '') => {
         if (!suggestionsList || !searchInput) {
             return;
@@ -352,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Giữ dropdown mở với trạng thái rỗng để người dùng biết query không có địa điểm phù hợp.
+        // Khi không có kết quả, giữ menu mở với role=status để phản hồi được nhìn thấy và thông báo bằng screen reader.
         if (!matches.length) {
             suggestionsList.replaceChildren();
             const emptyMessage = document.createElement('div');
@@ -365,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Tạo button bằng DOM API: nhãn hiển thị không bị diễn giải như HTML.
+        // Gắn tên và tọa độ vào nút; phần chữ chỉ hiển thị tên địa điểm, không biến nội dung tìm được thành mã HTML.
         suggestionsList.replaceChildren();
         matches.forEach((city) => {
             const button = document.createElement('button');
@@ -384,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.setAttribute('aria-expanded', 'true');
 
         suggestionsList.querySelectorAll('.search-suggestion').forEach((button) => {
-            // Chọn gợi ý chỉ di chuyển map và mở popup; danh sách Selected cities vẫn lấy từ home.
+            // Kiểm tra tên/vị trí trên nút rồi phóng bản đồ và mở thông tin; nơi tìm riêng không được thêm vào danh sách Today.
             button.addEventListener('click', () => {
                 const cityName = button.dataset.city;
                 const lat = Number(button.dataset.lat);
@@ -418,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Render trạng thái ban đầu rồi xin vị trí thiết bị; nút header có thể gọi lại cùng handler.
+    // Hiện danh sách ban đầu rồi xin vị trí thiết bị; nút trên đầu trang cũng gọi lại thao tác này.
     renderCityList();
     useCurrentLocation();
 
@@ -426,6 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
         locationButton.addEventListener('click', useCurrentLocation);
     }
 
+    // Chỉ bật tìm kiếm nếu có ô nhập; thuộc tính aria-expanded báo danh sách gợi ý đang mở hay đóng cho trình đọc màn hình.
     if (searchInput) {
         searchInput.addEventListener('input', (event) => {
             renderSuggestions(event.target.value);
@@ -435,6 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderSuggestions(searchInput.value);
         });
 
+        // Bấm bên ngoài ô tìm/danh sách sẽ đóng gợi ý; bấm vào một địa điểm trong danh sách vẫn được xử lý bình thường.
         document.addEventListener('click', (event) => {
             if (!suggestionsList) {
                 return;

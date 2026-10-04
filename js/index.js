@@ -1,10 +1,11 @@
-// HOME: khởi tạo carousel, tìm địa điểm và dữ liệu thời tiết sau khi HTML đã sẵn sàng.
+// Chờ trang HTML dựng xong rồi mới lấy các phần tử cần điều khiển, tạo bộ thẻ trượt và bật tìm kiếm/tải thời tiết.
 document.addEventListener('DOMContentLoaded', () => {
-    // API key phục vụ request trực tiếp từ trình duyệt; cần giới hạn domain/quota tại nhà cung cấp.
+    // Mã này được gửi trong yêu cầu từ trình duyệt nên cần giới hạn trang được phép dùng và số lần gọi ở OpenWeather.
     const apiKey = '5634849698f284eba828945eec5edfee';
+    // Dùng làm thành phố dự phòng nếu đường dẫn, bộ nhớ trình duyệt và lựa chọn của người dùng đều chưa có tên thành phố.
     const defaultCity = 'Ho Chi Minh';
 
-    // Các phần tử được giữ lại một lần để những lần cập nhật card không phải truy vấn DOM lặp lại.
+    // Lấy sẵn các phần tử HTML để dùng lại; số thứ tự yêu cầu giúp bỏ kết quả cũ nếu thao tác mới hoàn tất trước.
     const cards = Array.from(document.querySelectorAll('.weather-card'));
     const prevButton = document.querySelector('.carousel-prev');
     const nextButton = document.querySelector('.carousel-next');
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let latestHomeSearchRequest = 0;
     let homeSearchTimer = null;
 
-    // Trang không có carousel thì không đăng ký các handler riêng của home.
+    // Nếu trang không có card thời tiết thì dừng, tránh gắn sự kiện home vào một trang không có giao diện tương ứng.
     if (!cards.length) {
         return;
     }
@@ -30,10 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
         activeIndex = 0;
     }
 
-    // Chỉ số carousel quay vòng để nút trước/sau luôn hoạt động ở hai đầu danh sách.
+    // Chuẩn hóa chỉ số về 0..cards.length-1; cộng length trước modulo để cả giá trị âm từ nút Previous cũng quay đúng vòng.
     const clampIndex = (index) => (index + cards.length) % cards.length;
 
-    // Tạo hiệu ứng xếp lớp theo khoảng cách của card với card đang chọn.
+    // Khoảng cách âm/dương cho biết thẻ nằm bên trái/phải thẻ đang chọn; thẻ càng xa thì càng lệch và xoay nhiều.
     const getCardTransform = (distance) => {
         const absoluteDistance = Math.abs(distance);
 
@@ -50,11 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return `translate3d(${x}px, ${y}px, ${z}px) rotate(${rotation}deg)`;
     };
 
-    // Card càng xa vị trí đang chọn thì càng mờ và tối, nhưng vẫn giữ mức tối thiểu để nhận biết carousel.
+    // Dùng trị tuyệt đối distance để card xa mờ/tối dần; ngưỡng tối thiểu giữ các card nền còn nhận ra được.
     const getCardOpacity = (distance) => Math.max(0.38, 1 - Math.abs(distance) * 0.2);
     const getCardBrightness = (distance) => Math.max(0.82, 1 - Math.abs(distance) * 0.1);
 
-    // Giữ tên trong header nhất quán với các tên tiếng Anh đang dùng ở những card có sẵn.
+    // Áp alias cho ba tên Việt đã biết để khớp nhãn card; địa danh khác giữ nguyên chuỗi được chọn.
     const updateLocationLabel = (city) => {
         if (locationLabel && city) {
             const cityAliases = {
@@ -76,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Map dùng chính các thành phố trên home làm danh sách được chọn; vì vậy luôn lưu từ DOM card hiện tại.
+    // Lưu tên theo thứ tự card hiện có; lọc card thiếu data-city để map không nhận mục rỗng hoặc không xác định.
     const persistCityList = () => {
         const cityNames = cards
             .map((card) => card.dataset.city)
@@ -85,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('wefo-map-cities', JSON.stringify(cityNames));
     };
 
-    // Chia sẻ điều kiện, nhiệt độ, icon và tọa độ hiện tại với map/forecast qua localStorage.
+    // Gộp thông tin thời tiết theo tên thành phố để trang bản đồ/dự báo dùng lại; chỉ lưu tọa độ khi cả hai số đều hợp lệ.
     const persistMapWeather = (city, weather) => {
         try {
             const savedConditions = JSON.parse(localStorage.getItem('wefo-map-weather') || '{}');
@@ -106,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Hủy hiệu lực request đang chờ và đóng dropdown khi người dùng xóa query, nhấn Escape hoặc chọn nơi.
+    // Tăng số thứ tự tìm kiếm để bỏ kết quả cũ đang chờ; xóa lựa chọn, đóng danh sách và báo menu đã đóng cho trình đọc màn hình.
     const hideHomeSuggestions = () => {
         latestHomeSearchRequest += 1;
         if (homeSuggestionsList) {
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return window.WeFoPlaceSearch.search(query);
     };
 
-    // Tải gợi ý bất đồng bộ; requestId ngăn response cũ ghi đè query mới hơn.
+    // Bỏ khoảng trắng thừa trong tên thành phố; chỉ dùng kết quả của lần tìm mới nhất để nội dung cũ không ghi đè nội dung mới.
     const renderHomeSuggestions = async (query) => {
         if (!homeSuggestionsList || !searchInput) return;
 
@@ -135,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const matches = await fetchHomePlaceSuggestions(normalizedQuery);
         if (requestId !== latestHomeSearchRequest) return;
 
+        // Xóa các lựa chọn cũ trước khi thêm tên mới hoặc báo rằng không tìm thấy địa điểm phù hợp.
         homeSuggestionsList.replaceChildren();
         if (!matches.length) {
             const emptyMessage = document.createElement('div');
@@ -164,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.setAttribute('aria-expanded', 'true');
     };
 
-    // Đồng bộ class/style/link của mọi card, lưu danh sách thành phố cho map và cập nhật bộ đếm.
+    // Chọn thẻ mới, sắp xếp các thẻ phía trước/sau, sửa link dự báo, lưu danh sách cho bản đồ và cập nhật số thứ tự.
     const updateCarousel = (nextIndex) => {
         activeIndex = clampIndex(nextIndex);
 
@@ -197,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCarousel(targetIndex);
     };
 
+    // Tách listener theo nút để thao tác điều hướng chỉ thay chỉ số card, không tải lại dữ liệu.
     if (prevButton) {
         prevButton.addEventListener('click', () => {
             goToCard(activeIndex - 1);
@@ -278,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return mapping[code] || (isDay ? 'wi-day-cloudy' : 'wi-night-alt-cloudy');
     };
 
-    // Dừng request sớm nếu cấu hình key chưa được thay bằng key hợp lệ.
+    // Không gửi yêu cầu thời tiết nếu mã truy cập còn trống hoặc vẫn là chữ mẫu.
     const ensureApiKey = () => {
         if (!apiKey || apiKey === 'API_KEY') {
             console.warn('OpenWeather API key is not configured. Replace API_KEY in js/index.js with a valid key.');
@@ -399,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Ranh giới giữa request và render một card; giữ nguyên lỗi để caller quyết định thông báo phù hợp.
+    // Lấy dữ liệu trước rồi mới cập nhật thẻ; nếu có lỗi thì trả lỗi về để nơi gọi chọn lời báo phù hợp.
     const loadCardWeather = async (card, city, coordinates) => {
         const data = await fetchWeatherData(city, coordinates);
 
@@ -411,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     };
 
-    // Chọn thành phố mới cho card đang hoạt động; requestId bỏ qua kết quả cũ nếu người dùng đổi lựa chọn nhanh.
+    // Tải thành phố mới vào thẻ đang xem; chỉ kết quả của lần yêu cầu mới nhất được phép đổi nội dung thẻ.
     const loadCityWeather = async (city, coordinates) => {
         const resolvedCity = city || defaultCity;
         const requestId = ++latestCityRequest;
@@ -465,7 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Tìm kiếm home có debounce để giảm request, hỗ trợ phím Escape/ArrowDown và chọn địa điểm bằng tọa độ.
+    // Chỉ bật gợi ý khi có cả form và ô nhập; đợi người dùng ngừng gõ, hỗ trợ Escape/ArrowDown và giữ tọa độ trong từng kết quả.
     if (searchForm && searchInput) {
         searchInput.addEventListener('input', () => {
             searchStatus.textContent = '';
@@ -478,6 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
             homeSearchTimer = window.setTimeout(() => renderHomeSuggestions(query), 300);
         });
 
+        // Escape đóng gợi ý; ArrowDown chuyển focus để lựa chọn có thể hoàn tất bằng bàn phím.
         searchInput.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 hideHomeSuggestions();
@@ -519,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadCityWeather(typedCity);
         });
 
+        // Click bên ngoài vùng search đóng menu, nhưng click trong input hoặc danh sách không bị can thiệp.
         document.addEventListener('click', (event) => {
             if (!event.target.closest('.home-search-wrap')) {
                 hideHomeSuggestions();
@@ -538,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateLocationLabel(savedCity);
 
-    // Tải thời tiết ban đầu cho toàn bộ card song song để home và map có cùng snapshot mới nhất.
+    // Tải thời tiết cho các thẻ cùng lúc; khi xong chỉ khôi phục thành phố đã lưu nếu người dùng chưa đổi lựa chọn trong lúc chờ.
     Promise.all(cards.map((card) => loadCardWeather(card, card.dataset.city)))
         .then(() => {
             const currentSavedCity = localStorage.getItem('wefo-selected-city') || defaultCity;

@@ -1,15 +1,16 @@
-// FORECAST: khởi tạo sau khi HTML sẵn sàng để các card, tab và vùng tóm tắt đã tồn tại trong DOM.
+// Chờ trang HTML dựng xong, sau đó tải thời tiết hiện tại và dự báo để điền phần đầu trang, năm thẻ ngày và phần chi tiết.
 document.addEventListener('DOMContentLoaded', () => {
-    // API trả thời tiết hiện tại và forecast 5 ngày; key ở client cần được giới hạn theo domain/quota.
+    // Mã truy cập OpenWeather được gửi từ trình duyệt cho hai địa chỉ lấy thời tiết; nên giới hạn trang dùng và số lần gọi.
     const apiKey = '5634849698f284eba828945eec5edfee';
     const defaultCity = 'Ho Chi Minh';
 
-    // Lưu snapshot để tab Today/Tomorrow có thể đổi nội dung mà không phải gọi API lại.
+    // Giữ ngày đang chọn cùng hai gói dữ liệu mới nhất để đổi tab không phải gọi dịch vụ thời tiết thêm lần nữa.
     let activeDayMode = 'tomorrow';
     let currentWeatherData = null;
     let currentForecastData = null;
     let currentCityLabel = '';
 
+    // Lấy các phần tử HTML cần cập nhật để mỗi hàm chỉ thay đổi đúng vùng giao diện của trang dự báo.
     const heroTitle = document.querySelector('.hero-copy h1');
     const heroMeta = document.querySelector('.hero-meta');
     const forecastGrid = document.getElementById('forecast-carousel');
@@ -18,14 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const backTopButton = document.querySelector('.back-top');
     const forecastCards = Array.from(document.querySelectorAll('.forecast-card')).slice(0, 5);
 
-    // Dùng cùng định dạng nhiệt độ và thời gian cho các card dự báo và phần Highlights.
+    // Làm tròn nhiệt độ Celsius và đổi thời gian từ giây sang giờ/phút theo thiết lập ngôn ngữ của trình duyệt.
     const formatTemp = (value) => `${Math.round(value)}°C`;
     const formatTime = (timestamp) => new Date(timestamp * 1000).toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
     });
 
-    // Ưu tiên mã icon do OpenWeather trả về; chỉ suy luận mã ban ngày khi payload thiếu mã hợp lệ.
+    // Dùng mã biểu tượng OpenWeather nếu có; nếu thiếu thì chọn biểu tượng từ loại thời tiết, mặc định là nhiều mây ban ngày.
     const getOpenWeatherIconCode = (weather) => {
         const condition = (weather?.main || '').toLowerCase();
         const iconCode = weather?.icon || '';
@@ -58,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         node.append(icon);
     };
 
-    // Đổi ngày forecast thành nhãn thân thiện: Today, Tomorrow hoặc tên thứ.
+    // So ngày dự báo với ngày trên máy người dùng để hiện Hôm nay/Ngày mai; ngày khác dùng tên thứ viết tắt.
     const getDateLabel = (dateKey) => {
         const date = new Date(`${dateKey}T12:00:00`);
         const today = new Date();
@@ -70,13 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date);
     };
 
-    // Nhãn tháng/ngày cho phần đầu của từng card 5 ngày.
+    // Đổi ngày dạng năm-tháng-ngày thành tên tháng ngắn và số ngày để đặt cạnh tên thứ trên thẻ.
     const getDateMonthLabel = (dateKey) => new Intl.DateTimeFormat('en-US', {
         month: 'short',
         day: 'numeric'
     }).format(new Date(`${dateKey}T12:00:00`));
 
-    // Tạo nhãn ngày cho Highlights từ mốc forecast thực tế được chọn.
+    // Lấy ngày từ mốc dự báo đang dùng; nếu thiếu dữ liệu thời gian thì dùng ngày hiện tại trên máy người dùng.
     const getSummaryDateLabel = (target, mode) => {
         const date = target?.dt_txt
             ? new Date(target.dt_txt.replace(' ', 'T'))
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${mode === 'today' ? 'Today' : 'Tomorrow'} · ${dateLabel}`;
     };
 
+    // Tìm phần tử theo mẫu chỉ định rồi đổi chữ nếu tìm thấy; thiếu phần tử thì bỏ qua thay vì làm hỏng cả trang.
     const setText = (selector, text) => {
         const node = document.querySelector(selector);
         if (node) {
@@ -96,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Chia sẻ condition, nhiệt độ, icon và tọa độ hiện tại với map qua localStorage.
+    // Ghi thông tin theo tên thành phố vào bộ nhớ trình duyệt để bản đồ dùng lại; lỗi lưu chỉ ghi cảnh báo, không dừng trang.
     const persistCurrentWeather = (city, weather) => {
         try {
             const savedConditions = JSON.parse(localStorage.getItem('wefo-map-weather') || '{}');
@@ -114,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Không gửi request nếu key chưa được cấu hình.
+    // Không gửi yêu cầu lấy thời tiết nếu mã truy cập rỗng hoặc còn là chữ mẫu; ghi cảnh báo để dễ tìm lỗi cấu hình.
     const ensureApiKey = () => {
         if (!apiKey || apiKey === 'API_KEY') {
             console.warn('OpenWeather API key is not configured.');
@@ -123,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     };
 
-    // Dùng tọa độ đã lưu khi có để tránh nhầm địa danh trùng tên; nếu không thì tra theo tên.
+    // Ưu tiên tọa độ hợp lệ đã lưu cho thành phố; nếu không có thì tìm bằng tên đã mã hóa để xử lý dấu và khoảng trắng.
     const getWeatherData = async (city) => {
         if (!ensureApiKey()) return null;
 
@@ -149,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch(forecastUrl)
             ]);
 
+            // Cần đủ dữ liệu hiện tại và dự báo; nếu một yêu cầu lỗi thì bỏ cả lượt tải để tránh hiển thị thông tin thiếu.
             if (!weatherRes.ok || !forecastRes.ok) {
                 throw new Error('Unable to load weather data.');
             }
@@ -163,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Dịch carousel đúng một card cộng khoảng cách giữa card, giữ điều khiển phù hợp kích thước hiện tại.
+    // Đo chiều rộng thẻ đầu, cộng khoảng cách giữa các thẻ rồi cuộn gần bằng một thẻ mỗi lần bấm mũi tên.
     const scrollForecast = (direction) => {
         if (!forecastGrid || !forecastCards.length) return;
 
@@ -176,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Các nút carousel không có trên mọi biến thể markup nên chỉ gắn listener khi phần tử thực sự tồn tại.
     if (prevButton) {
         prevButton.addEventListener('click', () => scrollForecast(-1));
     }
@@ -190,11 +194,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Gom các mốc 3 giờ theo ngày, chọn mốc gần giữa trưa và tính high/low từ toàn bộ mốc của ngày.
+    // Gom các mốc thời tiết cách nhau ba giờ theo ngày, bỏ ngày hiện tại rồi điền tối đa năm ngày tiếp theo vào thẻ.
     const renderForecastCards = (forecastData) => {
         if (!forecastData || !forecastData.list || !forecastCards.length) return;
 
-        // API trả nhiều bản ghi mỗi ngày; nhóm theo YYYY-MM-DD để tổng hợp thành một card/ngày.
+        // Dịch vụ trả nhiều mốc trong ngày; lấy phần ngày từ thời gian để gom chúng vào cùng một thẻ.
         const grouped = {};
         forecastData.list.forEach((entry) => {
             const dateKey = entry.dt_txt.split(' ')[0];
@@ -206,11 +210,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const todayKey = new Date().toISOString().split('T')[0];
         const nextDates = allDates.filter((date) => date !== todayKey).slice(0, 5);
 
+        // Mỗi thẻ HTML dự phòng ứng với một ngày; nếu không có dữ liệu thật cho ngày đó thì ẩn thẻ.
         forecastCards.forEach((card, index) => {
             const dateKey = nextDates[index];
             const items = dateKey ? grouped[dateKey] : [];
 
-            // Chọn điều kiện gần 12:00 làm icon đại diện, còn nhiệt độ cao/thấp lấy trên mọi bản ghi ngày đó.
+            // Chọn mốc gần giữa trưa để lấy biểu tượng/cảm giác nhiệt; nhiệt độ cao và thấp tính từ mọi mốc trong ngày.
             const pick = items.length ? items.reduce((best, current) => {
                 const bestHour = best ? Math.abs(new Date(best.dt_txt).getHours() - 12) : Infinity;
                 const currentHour = Math.abs(new Date(current.dt_txt).getHours() - 12);
@@ -247,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Chọn bản ghi trong ngày hiện tại/ngày mai gần 12:00 để làm nguồn cho Highlights.
+    // Tìm các mốc thuộc ngày đang chọn rồi lấy mốc gần trưa; nếu ngày đó chưa có trong dữ liệu thì dùng mốc gần nhất có sẵn.
     const getDayForecastSnapshot = (forecast, mode = 'tomorrow') => {
         if (!forecast || !forecast.list || !forecast.list.length) return null;
 
@@ -277,10 +282,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const highlightsTitle = document.getElementById('highlights-title');
 
         const cityName = displayCity || weather.name || 'City';
-        // Fallback về bản ghi forecast đầu tiên nếu API không có bản ghi nằm đúng ngày local cần hiển thị.
+        // Ưu tiên mốc đúng ngày, kế đến mốc dự báo đầu tiên; nếu vẫn thiếu thì dùng số liệu thời tiết hiện tại.
         const target = getDayForecastSnapshot(forecast, mode) || forecast?.list?.[0];
         const summaryWeather = target?.weather?.[0] || weather.weather?.[0];
         const tempValue = target?.main?.temp ?? weather.main?.temp ?? 0;
+        // Ưu tiên độ ẩm/gió của ngày đang xem; nếu dịch vụ thiếu giá trị đó thì dùng thời tiết hiện tại, cuối cùng là 0.
         const humidity = `${target?.main?.humidity ?? weather.main?.humidity ?? 0}%`;
         const wind = `${Math.round(target?.wind?.speed ?? weather.wind?.speed ?? 0)} km/h`;
 
@@ -295,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sunrise = formatTime(weather.sys?.sunrise || 0);
         const sunset = formatTime(weather.sys?.sunset || 0);
 
+        // Chỉ cập nhật khi có đủ bốn ô; thứ tự trong HTML là bình minh, hoàng hôn, độ ẩm rồi tốc độ gió.
         if (summaryItems.length >= 4) {
             summaryItems[0].innerHTML = `<span style="font-size:22px;">☀</span><b>Sunrise</b><small>${sunrise}</small>`;
             summaryItems[1].innerHTML = `<span style="font-size:22px;">◒</span><b>Sunset</b><small>${sunset}</small>`;
@@ -304,10 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     };
 
-    // Cập nhật phần đầu trang và toàn bộ forecast sau khi nhận đủ hai response từ OpenWeather.
+    // Nhận đủ hai gói dữ liệu đã đọc, giữ chúng để dùng lại rồi cập nhật tiêu đề, năm thẻ ngày và phần tóm tắt.
     const renderCurrentWeather = ({ weather, forecast }, displayCity = '') => {
         if (!weather || !forecast) return;
 
+        // Giữ dữ liệu trong bộ nhớ để nút đổi ngày cập nhật màn hình mà không gọi dịch vụ lần nữa.
         currentWeatherData = weather;
         currentForecastData = forecast;
 
@@ -329,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDailySummary(weather, forecast, activeDayMode, displayCity);
     };
 
-    // Tab chỉ đổi mode và render lại từ snapshot; không tạo thêm request thời tiết.
+    // Gắn sự kiện sau khi tải thành công; bấm nút đổi ngày và dấu chọn, rồi dùng dữ liệu đã có để cập nhật màn hình.
     const setupDayTabs = () => {
         const tabButtons = document.querySelectorAll('.tabs button');
         if (!tabButtons.length) return;
@@ -348,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Điểm vào tải forecast: URL có city được ưu tiên, sau đó localStorage, rồi thành phố mặc định.
+    // Chọn thành phố theo thứ tự: đường dẫn, lựa chọn đã lưu trong trình duyệt, rồi thành phố mặc định.
     const loadWeather = async (city) => {
         const selectedCity = city || localStorage.getItem('wefo-selected-city') || defaultCity;
         const result = await getWeatherData(selectedCity);
@@ -360,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Lưu city từ URL để header, home và map dùng cùng lựa chọn sau khi chuyển trang.
+    // Link từ trang Today có thể mang theo tên thành phố; lưu tên đó để trang Today và bản đồ dùng lại sau này.
     const requestedCity = new URLSearchParams(window.location.search).get('city');
     const savedCity = localStorage.getItem('wefo-selected-city') || defaultCity;
     const selectedCity = requestedCity || savedCity;

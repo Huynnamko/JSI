@@ -1,14 +1,14 @@
 
-// Form và các trường đăng nhập được truy vấn theo class/id trong html/login.html.
+// Các tên class/id phải khớp html/login.html để mã này đọc đúng ô email, mật khẩu và form đăng nhập.
 const inpEmail = document.querySelector(".inp-email");
 const inpPwd = document.querySelector(".inp-pwd");
 const loginForm = document.querySelector("#login-form");
 
-// Session còn hạn sẽ được chuyển thẳng về trang chủ thay vì hiển thị lại form đăng nhập.
+// Đọc thời điểm hết hạn; nếu thời điểm đó còn ở tương lai thì chuyển thẳng về Today, không yêu cầu đăng nhập lại.
 const now = new Date().getTime();
 const userSession = JSON.parse(localStorage.getItem("user_session") || "null");
 
-// Đồng bộ hồ sơ tối thiểu vào localStorage để trang profile có thể render nhanh trước khi Firestore phản hồi.
+// Lưu tên/email từ Firebase cùng ngày sinh/giới tính từ Firestore để trang Profile hiện nhanh ở lần mở sau.
 async function cacheProfile(user) {
     let profileData = {
         uid: user.uid,
@@ -20,7 +20,7 @@ async function cacheProfile(user) {
 
     try {
         const cachedProfile = JSON.parse(localStorage.getItem("profile_data") || "null");
-        // Chỉ tái sử dụng cache thuộc đúng UID; cache đủ thông tin thì không cần đọc Firestore lần nữa.
+        // Chỉ dùng thông tin lưu của đúng tài khoản; nếu đã đủ tên/ngày sinh/giới tính thì không cần đọc lại Firestore.
         if (cachedProfile?.uid === user.uid) {
             profileData = { ...profileData, ...cachedProfile };
 
@@ -29,7 +29,7 @@ async function cacheProfile(user) {
             }
         }
 
-        // Dữ liệu server là nguồn bổ sung cho ngày sinh/giới tính không có trong Firebase Auth.
+        // Firestore bổ sung ngày sinh/giới tính mà Firebase đăng nhập không lưu; thông tin mới thay bản cũ của cùng tài khoản.
         const profileSnapshot = await db.collection("users").doc(user.uid).get();
         if (profileSnapshot.exists) {
             profileData = { ...profileData, ...profileSnapshot.data() };
@@ -46,23 +46,23 @@ if (now < userSession?.expiry) {
     window.location.href = "../index.html";
 }
 
-// Luồng đăng nhập email: chặn submit mặc định, xác thực với Firebase, lưu hạn session và mở trang chủ.
+// Kiểm tra email/mật khẩu, gửi tới Firebase để đăng nhập; thành công lưu phiên 2 giờ và mở trang Today.
 function handleLogin(event) {
-    event.preventDefault(); // Ngăn chặn hành vi mặc định của form
+    event.preventDefault(); // Giữ người dùng ở trang hiện tại để handler gọi Firebase thay cho submit/reload mặc định.
 
     let email = inpEmail.value;
     let password = inpPwd.value;
 
-    // Kiểm tra các trường có trống không
+    // Dừng trước network call nếu thiếu email hoặc password; required trong HTML là lớp kiểm tra bổ sung ở trình duyệt.
     if (!email || !password) {
         alert("Please fill in all fields.");
         return;
     }
 
-    // Firebase xác minh thông tin; dữ liệu profile được cache song song sau khi đăng nhập thành công.
+    // Sau khi Firebase xác nhận đăng nhập, lưu thông tin hồ sơ bổ sung song song để trang Profile dùng lại.
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then(async (userCredential) => {
-            // Session client có hạn hai giờ để các trang giao diện biết khi nào cần quay lại đăng nhập.
+            // Lưu tài khoản cùng giờ hết hạn; check_session.js dùng giờ này để quyết định có cho vào trang cần đăng nhập không.
             var user = userCredential.user;
             const userSession = {
                 user,
@@ -84,10 +84,11 @@ function handleLogin(event) {
 
 loginForm.addEventListener("submit", handleLogin);
 
-// Luồng đăng nhập Google dùng popup Firebase; nút được kiểm tra tồn tại để script không phụ thuộc mọi trang.
+// Nút Google chỉ tồn tại ở form login; kiểm tra null giúp file không lỗi nếu được nạp trên markup khác.
 const googleLoginBtn = document.getElementById("google-login");
 if (googleLoginBtn) {
     googleLoginBtn.addEventListener('click', function() {
+        // Mở cửa sổ đăng nhập Google; khi thành công, dùng cùng cách lưu phiên và hồ sơ như đăng nhập bằng email.
         const provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider)
             .then(async (result) => {

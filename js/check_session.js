@@ -1,7 +1,7 @@
-// GATE GIAO DIỆN: các trang gọi tệp này trong phần head để chuyển người chưa có session còn hạn về trang đăng nhập.
-// Session này chỉ điều khiển giao diện phía client; quyền đọc/ghi dữ liệu vẫn phải được bảo vệ bằng Firebase Rules.
+// Các trang cần đăng nhập gọi tệp này sớm; người chưa đăng nhập hoặc phiên đã hết hạn sẽ được đưa về Login.
+// Phiên trong trình duyệt chỉ quyết định việc hiển thị trang; Firebase Rules vẫn phải bảo vệ dữ liệu thật.
 function checkSession() {
-    // Lấy bản session do luồng đăng nhập lưu và phân tích an toàn để xử lý dữ liệu rỗng hoặc JSON không hợp lệ.
+    // Đọc thông tin đăng nhập đã lưu; nếu dữ liệu bị hỏng thì bỏ qua và coi như chưa có phiên hợp lệ.
     const storedSession = localStorage.getItem("user_session");
     let userSession = null;
 
@@ -11,7 +11,7 @@ function checkSession() {
         console.error("Invalid user session:", error);
     }
 
-    // Chỉ chấp nhận session có thời điểm hết hạn dạng số và còn nằm trong tương lai.
+    // Chỉ coi là đã đăng nhập khi có giờ hết hạn hợp lệ và giờ hiện tại vẫn còn trước mốc đó.
     const hasValidSession = userSession
         && Number.isFinite(userSession.expiry)
         && Date.now() < userSession.expiry;

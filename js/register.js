@@ -1,4 +1,4 @@
-// Các trường đăng ký liên kết với form trong html/register.html.
+// Lấy tên, email, mật khẩu, ngày sinh và giới tính từ các ô trong html/register.html để tạo tài khoản và hồ sơ.
 const inpUsername = document.querySelector(".inp-username");
 const inpEmail = document.querySelector(".inp-email");
 const inpPwd = document.querySelector(".inp-pwd");
@@ -7,7 +7,7 @@ const inpBirthday = document.querySelector(".inp-birthday");
 const inpGender = document.querySelector(".inp-gender");
 const registerForm = document.querySelector("#register-form");
 
-// Tạo tài khoản Auth trước, sau đó đồng bộ hồ sơ bổ sung vào Firestore theo UID do Firebase cấp.
+// Chặn gửi form mặc định, kiểm tra dữ liệu, tạo tài khoản Firebase rồi lưu thông tin hồ sơ riêng vào Firestore.
 function handleRegister(event) {
     event.preventDefault();
 
@@ -19,7 +19,7 @@ function handleRegister(event) {
     const gender = inpGender.value;
     const roleId = 2;
 
-    // Kiểm tra dữ liệu ở client để báo lỗi sớm; Firebase vẫn chịu trách nhiệm xác thực email/mật khẩu.
+    // Báo sớm nếu thiếu thông tin hoặc hai mật khẩu khác nhau; Firebase vẫn kiểm tra email/mật khẩu khi tạo tài khoản.
     if (!username || !email || !password || !confirmPassword || !birthday || !gender) {
         alert("Please fill in all fields.");
         return;
@@ -43,10 +43,10 @@ function handleRegister(event) {
                 balance: 0
             };
 
-            // Cache hồ sơ để trang profile có thể hiển thị ngay sau lần đăng nhập tiếp theo.
+            // Lưu tạm hồ sơ theo mã tài khoản để trang Profile có thể hiện thông tin ngay lần mở kế tiếp.
             localStorage.setItem("profile_data", JSON.stringify(userData));
 
-            // Auth profile chỉ có tên/email; ngày sinh và giới tính được ghi vào tài liệu Firestore của UID.
+            // Lưu tên hiển thị vào Firebase; sau đó ghi ngày sinh, giới tính và thông tin còn lại vào hồ sơ riêng của tài khoản.
             user.updateProfile({ displayName: username })
                 .then(() => db.collection("users").doc(user.uid).set(userData))
                 .then(() => {
@@ -64,5 +64,5 @@ function handleRegister(event) {
         });
 }
 
-// Chỉ form đăng ký có id này; handler ngăn trình duyệt gửi dữ liệu biểu mẫu theo URL mặc định.
+// Gắn thao tác tạo tài khoản vào form; preventDefault giữ dữ liệu khỏi URL để handler gửi thẳng tới Firebase.
 registerForm.addEventListener("submit", handleRegister);

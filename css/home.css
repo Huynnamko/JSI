@@ -491,7 +491,7 @@ button {
    SEARCH
 ========================================================= */
 
-/* Keep the dropdown attached to the input and above the overlapping weather-card stack. */
+/* Đặt danh sách gợi ý ngay dưới ô tìm kiếm và nổi lên trên các thẻ thời tiết đang chồng nhau. */
 .home-search-wrap {
     position: relative;
     z-index: 30;
@@ -557,7 +557,7 @@ button {
     font-size: 18px;
 }
 
-/* Suggestions are toggled by index.js; the high stacking level prevents the carousel hiding results. */
+/* index.js mở/đóng danh sách gợi ý; lớp hiển thị cao giúp các thẻ thời tiết không che mất danh sách. */
 .home-search-suggestions {
     position: absolute;
     top: calc(100% + 8px);
@@ -616,6 +616,7 @@ button {
    QUICK CITIES
 ========================================================= */
 
+/* Nút thành phố nhanh dùng cùng tên với các thẻ bên cạnh và tự xuống dòng khi khu vực đầu trang hẹp. */
 .quick-cities {
     display: flex;
     align-items: center;
@@ -647,6 +648,7 @@ button {
    WEATHER VISUAL
 ========================================================= */
 
+/* Căn giữa chồng thẻ thời tiết trong cột riêng, không phụ thuộc chiều rộng phần chữ bên cạnh. */
 .weather-visual {
     position: relative;
     min-height: 600px;
@@ -661,12 +663,14 @@ button {
    CARD STACK
 ========================================================= */
 
+/* Khung có chiều cao cố định làm mốc để đặt các thẻ chồng lên nhau mà không đẩy lệch bố cục. */
 .card-stack {
     position: relative;
     width: min(100%, 480px);
     height: 510px;
 }
 
+/* Các thẻ nằm chồng trong cùng khung; index.js đổi vị trí, độ mờ và thứ tự trước/sau theo thẻ đang chọn. */
 .weather-card {
     position: absolute;
     inset: 0;
@@ -701,6 +705,7 @@ button {
    CARD STACK POSITIONS
 ========================================================= */
 
+/* Vị trí mặc định giúp các thẻ vẫn xếp lớp trước khi index.js tính lại vị trí theo lựa chọn hiện tại. */
 .weather-card:nth-child(1) {
     z-index: 4;
     transform:
@@ -881,6 +886,7 @@ button {
    METRICS
 ========================================================= */
 
+/* Chia đều ba cột để độ ẩm, gió và UV luôn thẳng hàng dù số liệu mỗi ô dài ngắn khác nhau. */
 .metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -938,6 +944,7 @@ button {
    HOURLY
 ========================================================= */
 
+/* Đặt link chi tiết lên trên vùng chồng thẻ để vẫn bấm được trên thẻ đang chọn. */
 .hourly-heading {
     position: relative;
     z-index: 25;
@@ -961,6 +968,7 @@ button {
     display: inline-block;
 }
 
+/* Bốn cột theo giờ khớp với bốn mốc dự báo mà index.js cập nhật trên mỗi thẻ. */
 .hourly-list {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -1247,6 +1255,8 @@ button {
 
 @media (max-width: 1000px) {
 
+    /* Thu gọn khoảng cách header/nút trước khi chuyển hero sang một cột ở breakpoint kế tiếp. */
+
     .site-header {
         gap: 18px;
     }
@@ -1276,6 +1286,8 @@ button {
 ========================================================= */
 
 @media (max-width: 900px) {
+
+    /* Giữ taskbar cố định nhưng cho nav xuống hàng; hero, card và footer chuyển sang bố cục ít cột hơn. */
 
     .site-header {
         /*
@@ -1353,6 +1365,8 @@ button {
 ========================================================= */
 
 @media (max-width: 560px) {
+
+    /* Xếp taskbar thành hai hàng, nén card/metrics và giữ search cùng footer trong bề rộng điện thoại. */
 
     .site-header,
     .hero,
@@ -1532,6 +1546,8 @@ button {
 
 @media (max-width: 390px) {
 
+    /* Ẩn chữ phụ ở nút vị trí và giảm kích thước card để dành chỗ cho nội dung trên máy nhỏ. */
+
     .site-header {
         align-items: center;
     }
@@ -1594,6 +1610,8 @@ button {
 ========================================================= */
 
 @media (max-width: 340px) {
+
+    /* Breakpoint cuối chỉ nén header để brand, login và nút vị trí không chạm mép viewport. */
 
     .site-header {
         width: calc(100% - 20px);

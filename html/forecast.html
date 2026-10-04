@@ -7,10 +7,10 @@
 
     <title>WeFo | Weather Forecast</title>
 
-    <!-- CSS trang forecast chứa bố cục card và icon; check_session/location_label dùng chung với các trang cần đăng nhập. -->
+    <!-- Tải kiểu dáng trang dự báo và hiệu ứng chuyển trang; kiểm tra đăng nhập ngay, đổi nhãn vị trí sau khi HTML sẵn sàng. -->
     <link rel="stylesheet" href="../css/forecast.css?v=4">
-    <link rel="stylesheet" href="../css/page-transitions.css?v=2">
-    <script src="../js/page-transition.js" defer></script>
+    <link rel="stylesheet" href="../css/page-transitions.css?v=3">
+    <script src="../js/page-transition.js?v=2" defer></script>
     <script src="../js/check_session.js"></script>
     <script src="../js/location_label.js"></script>
 </head>
@@ -34,6 +34,7 @@
             </a>
 
 
+            <!-- Các đường dẫn chuyển giữa trang; mục Forecast được đánh dấu là trang đang mở. -->
             <nav class="main-nav" aria-label="Main navigation">
 
                 <a href="../index.html">
@@ -80,6 +81,7 @@
 
             <!-- ================= HERO ================= -->
 
+            <!-- Phần đầu trang hiện tiêu đề, thành phố, nhiệt độ và tình trạng thời tiết mới tải được. -->
             <section
                 class="hero"
                 aria-labelledby="forecast-title"
@@ -130,8 +132,6 @@
                 aria-labelledby="weekly-title"
             >
 
-                <!-- Năm card bên dưới là khung dự phòng; forcecast.js nhóm forecast theo ngày rồi thay nội dung từng card. -->
-
                 <div class="section-heading">
 
                     <div>
@@ -154,8 +154,7 @@
                     id="forecast-carousel"
                 >
 
-
-                    <!-- Mỗi card giữ cùng cấu trúc ngày/icon/high-low/RealFeel để JS cập nhật theo chỉ số ngày. -->
+                    <!-- Năm thẻ được điền theo thứ tự ngày; mỗi thẻ giữ tên thứ, ngày, biểu tượng, nhiệt độ cao/thấp và RealFeel. -->
 
                     <article class="forecast-card">
 
@@ -326,7 +325,7 @@
 
 
 
-            <!-- Highlights đổi Today/Tomorrow từ cùng forecast snapshot; các nút .tabs là hook của forcecast.js. -->
+            <!-- Phần chi tiết dùng chung dữ liệu đã tải; hai nút chỉ đổi giữa Hôm nay và Ngày mai, không tải lại dữ liệu. -->
 
             <section
                 class="highlights"
@@ -349,6 +348,7 @@
                     </div>
 
 
+                    <!-- Dấu selected cho biết đang xem Hôm nay hay Ngày mai. -->
                     <div class="tabs">
 
                         <button type="button">
@@ -371,10 +371,11 @@
                 <div class="highlight-layout">
 
 
-                    <!-- Tóm tắt dùng mốc gần giữa trưa của ngày chọn; các chỉ số bên dưới lấy từ cùng snapshot đó. -->
+                    <!-- Header summary lấy record gần trưa làm icon/nhiệt độ đại diện; city và ngày được đồng bộ theo lựa chọn hiện tại. -->
 
                     <article class="daily-summary">
 
+                        <!-- Header summary hiển thị city, ngày và nhiệt độ của mốc gần giữa trưa. -->
                         <div class="summary-top">
 
                             <div>
@@ -403,7 +404,7 @@
                         <hr>
 
 
-                        <!-- Bốn ô hiển thị sunrise, sunset, humidity và wind của thành phố đang xem. -->
+                        <!-- Bốn ô lần lượt hiển thị giờ mặt trời mọc, mặt trời lặn, độ ẩm và tốc độ gió. -->
                         <div class="summary-items">
 
                             <span>
@@ -492,7 +493,7 @@
         </button>
 
     </div>
-    <!-- Nạp Firebase SDK/config trước forcecast.js vì script forecast lưu snapshot weather dùng chung với map. -->
+    <!-- Nạp Firebase trước cấu hình; mã dự báo lưu thông tin thời tiết để trang bản đồ có thể dùng lại. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

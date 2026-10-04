@@ -5,16 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Profile</title>
-    <!-- Profile cần session gate và CSS riêng; dữ liệu account được điền bởi js/profile.js. -->
+    <!-- Kiểu dáng riêng cho hồ sơ; kiểm tra đăng nhập trước khi vào, rồi hiện thông tin lưu sẵn và cập nhật từ Firebase. -->
     <link rel="stylesheet" href="../css/profile.css?v=3">
-    <link rel="stylesheet" href="../css/page-transitions.css?v=2">
-    <script src="../js/page-transition.js" defer></script>
+    <link rel="stylesheet" href="../css/page-transitions.css?v=3">
+    <script src="../js/page-transition.js?v=2" defer></script>
     <script src="../js/check_session.js"></script>
     <script src="../js/location_label.js"></script>
 </head>
 
 <body>
     <div class="weather-shell">
+        <!-- Header cung cấp điều hướng toàn site và đánh dấu Profile là trang đang mở. -->
         <header class="site-header">
             <a class="brand" href="../index.html" aria-label="Weather WeFo home">
                 <span class="brand-mark" aria-hidden="true"><span></span></span>
@@ -35,20 +36,21 @@
         <main class="page">
             <div class="layout">
                 <section id="profile">
-                    <!-- Vùng hồ sơ duy nhất: các id phía dưới liên kết trực tiếp với renderer và editor trong profile.js. -->
+                    <!-- Các mã id bên dưới cho phép profile.js tìm đúng ô để hiện hoặc sửa từng thông tin tài khoản. -->
                     <article class="profile-card">
                         <div class="profile-head">
                             <div>
                                 <h2>Account details</h2><span class="status">WeFo member</span>
                             </div>
                         </div>
-                        <!-- Các span value được thay bằng input/select ở chế độ Edit và phục hồi sau khi lưu. -->
+                        <!-- Khi bấm Edit, chữ trong mỗi ô đổi thành ô nhập; sau khi lưu, giá trị được hiện lại dưới dạng chữ. -->
                         <div class="details">
                             <div><span class="label">Full name</span><span id="profile-name" class="value">Loading...</span></div>
                             <div><span class="label">Email address</span><span id="profile-email" class="value">Loading...</span></div>
                             <div><span class="label">Password</span><span id="profile-password" class="value">Loading...</span></div>
                             <div><span class="label">Birthday</span><span id="profile-birthday" class="value">Loading...</span></div>
                             <div><span class="label">Gender</span><span id="profile-gender" class="value">Loading...</span></div>
+                            <!-- Edit bật chế độ sửa/lưu; Log out đăng xuất tài khoản Firebase và xóa phiên trên trình duyệt. -->
                             <div class="profile-actions">
                                 <button id="editProfileButton" class="edit-button" type="button">Edit profile</button>
                                 <button id="logoutButton" class="logout-button" type="button">Log out</button>
@@ -59,7 +61,7 @@
             </div>
         </main>
     </div>
-    <!-- Firebase Auth/Firestore phải được khởi tạo trước profile.js để đọc và cập nhật hồ sơ theo UID. -->
+    <!-- Nạp Firebase trước profile.js; mã tài khoản dùng để đọc/ghi hồ sơ trong Firestore. Storage hiện chưa dùng trên trang này. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

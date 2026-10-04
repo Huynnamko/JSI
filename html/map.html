@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeFo | Map</title>
-    <!-- Leaflet phải có trước map.js; CSS bản đồ đi riêng để không ảnh hưởng các trang khác. -->
+    <!-- Tải kiểu dáng và thư viện Leaflet trước mã bản đồ để nền, nút phóng to và các dấu vị trí hoạt động. -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="../css/map.css?v=3">
-    <link rel="stylesheet" href="../css/page-transitions.css?v=2">
-    <script src="../js/page-transition.js" defer></script>
+    <link rel="stylesheet" href="../css/page-transitions.css?v=3">
+    <script src="../js/page-transition.js?v=2" defer></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="../js/check_session.js"></script>
     <script src="../js/location_label.js"></script>
@@ -18,6 +18,7 @@
 
 <body>
     <div class="weather-shell">
+            <!-- Thanh đầu trang có các đường dẫn chính; mục Map được đánh dấu là trang đang mở. -->
         <header class="site-header">
             <a class="brand" href="../index.html" aria-label="Weather WeFo home"><span class="brand-mark"
                     aria-hidden="true"><span></span></span><span>WeFo</span></a>
@@ -33,7 +34,7 @@
         </header>
 
         <main>
-            <!-- Bản đồ toàn cầu và danh sách city card đồng bộ từ localStorage của trang Today. -->
+            <!-- Khu vực này ghép bản đồ thế giới với danh sách thành phố đã chọn trên trang Today. -->
             <section class="intro" aria-labelledby="map-title">
                 <div>
                     <p class="eyebrow">Visual weather data</p>
@@ -41,6 +42,7 @@
                 </div>
             </section>
 
+            <!-- Bố cục đặt bản đồ cạnh danh sách; trên màn hình hẹp hai phần chuyển thành xếp dọc. -->
             <div class="map-layout">
                     <section class="map-card" aria-label="Global weather map">
                     <div class="map-toolbar">
@@ -54,12 +56,12 @@
                             <div class="search-suggestions" id="search-suggestions" aria-live="polite"></div>
                         </div>
                     </div>
-                    <!-- Leaflet gắn tile, marker thời tiết và marker vị trí hiện tại vào container này. -->
+                        <!-- Leaflet vẽ bản đồ tại đây; dấu thành phố và dấu vị trí thiết bị được quản lý riêng. -->
                     <div id="map" aria-label="Global weather map"></div>
                 </section>
 
                 <aside class="side-stack" aria-label="Weather information">
-                    <!-- Mỗi nút city chuyển map tới marker nhưng danh sách vẫn lấy từ các card home. -->
+                    <!-- Bấm một thành phố để đưa bản đồ tới nơi đó; danh sách vẫn theo các thẻ trên trang Today. -->
                     <section class="side-card">
                         <h2>Selected cities</h2>
                         <div class="city-list" id="selected-city-list"></div>
@@ -68,7 +70,7 @@
             </div>
         </main>
     </div>
-    <!-- Thứ tự quan trọng: Firebase config và place_search nạp trước map.js; Leaflet đã được nạp trong head. -->
+    <!-- Tải Firebase và chức năng tìm địa điểm trước mã bản đồ; thư viện Leaflet ở đầu trang cũng phải sẵn sàng trước đó. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

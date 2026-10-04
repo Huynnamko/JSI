@@ -12,12 +12,12 @@
 
     <title>WeFo | Today</title>
 
-    <!-- Trang Today là điểm vào chính: weathericons cung cấp glyph cho card, còn home.css giữ toàn bộ bố cục riêng. -->
+    <!-- Đây là trang chính; weathericons cung cấp biểu tượng thời tiết, còn home.css định dạng riêng giao diện trang này. -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weathericons/2.0.10/css/weather-icons.min.css">
     <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="css/page-transitions.css?v=2">
-    <script src="js/page-transition.js" defer></script>
-    <!-- Session gate cần chạy sớm; location label chỉ cập nhật nhãn header sau khi DOM được dựng. -->
+    <link rel="stylesheet" href="css/page-transitions.css?v=3">
+    <script src="js/page-transition.js?v=2" defer></script>
+    <!-- Kiểm tra đăng nhập trước khi hiện trang; sau khi HTML dựng xong mới đổi tên vị trí trên đầu trang. -->
     <script src="js/check_session.js"></script>
     <script src="js/location_label.js"></script>
 
@@ -28,7 +28,7 @@
 
 <div class="weather-shell">
 
-    <!-- Các lớp nền/trang trí chỉ phục vụ hình ảnh, ẩn khỏi trình đọc màn hình và không chứa dữ liệu thời tiết. -->
+    <!-- weather-shell gom nền, header, hero và card vào một vùng; ambient/rain chỉ trang trí nên aria-hidden để bỏ qua khi đọc. -->
     <div class="ambient ambient-one" aria-hidden="true"></div>
     <div class="ambient ambient-two" aria-hidden="true"></div>
 
@@ -49,7 +49,7 @@
 
 
 
-    <!-- ================= HEADER / TASKBAR ================= -->
+    <!-- Thanh đầu trang giữ tên WeFo, đường dẫn các trang, nút Login và vị trí; JavaScript chỉ đổi tên vị trí. -->
 
     <header class="site-header">
 
@@ -73,6 +73,7 @@
         </a>
 
 
+        <!-- Các link điều hướng dùng đường dẫn tương đối từ root để mở các trang trong thư mục html/. -->
         <nav
             class="main-nav"
             aria-label="Main navigation"
@@ -128,7 +129,7 @@
 
 
 
-    <!-- ================= MAIN ================= -->
+    <!-- Main là hero hai cột: nội dung tìm kiếm ở trái, carousel thời tiết ở phải trên màn rộng. -->
 
     <main
         id="top"
@@ -172,7 +173,7 @@
 
 
 
-            <!-- Search form là hook của index.js; dropdown nhận tên/nhãn địa lý, còn tọa độ đi riêng trong dữ liệu. -->
+            <!-- Khi gõ, danh sách hiện tên địa điểm; mỗi lựa chọn giữ tên đầy đủ và tọa độ để tải đúng nơi đó. -->
 
             <div class="home-search-wrap">
                 <form
@@ -232,7 +233,7 @@
 
 
 
-            <!-- Nút phổ biến gửi data-city cho handler để chọn card có sẵn thay vì nhập tên thủ công. -->
+            <!-- Các nút này chọn nhanh thẻ thành phố có sẵn rồi tải lại thời tiết mới nhất cho nơi đó. -->
 
             <div
                 class="quick-cities"
@@ -273,7 +274,7 @@
 
 
 
-        <!-- Carousel gồm các .weather-card; data-city là khóa đồng bộ với map và link forecast. -->
+        <!-- Các thẻ dùng cùng cấu trúc; tên thành phố giúp đồng bộ lựa chọn với bản đồ và trang dự báo. -->
 
         <section
             class="weather-visual"
@@ -284,13 +285,14 @@
             <div class="card-stack">
 
 
-                <!-- Card ban đầu trong HTML là fallback; index.js thay số liệu sau khi API trả weather/forecast. -->
+                <!-- Số liệu dưới đây chỉ để lấp chỗ trống lúc đầu; JavaScript thay bằng thời tiết mới và bốn mốc theo giờ. -->
 
                 <article
                     class="weather-card is-active"
                     data-city="Hanoi"
                 >
 
+                    <!-- Thanh trạng thái cho biết card đang trình bày thời tiết hiện tại và dữ liệu live. -->
                     <div class="card-topline">
 
                         <span>
@@ -310,6 +312,7 @@
 
 
 
+                    <!-- Hàng địa điểm ghép tên/ngày với glyph điều kiện; index.js thay nội dung sau khi fetch. -->
                     <div class="place-row">
 
                         <div>
@@ -343,6 +346,7 @@
 
 
 
+                    <!-- Nhiệt độ hiện tại và cảm giác thực tế nằm riêng để giữ thứ bậc đọc trên card. -->
                     <div class="temperature-row">
 
                         <strong>
@@ -367,6 +371,7 @@
 
 
 
+                    <!-- Ba ô bên dưới hiển thị độ ẩm, gió và mức UV; JavaScript thay các giá trị sau khi tải thời tiết. -->
                     <div class="metrics">
 
 
@@ -441,6 +446,7 @@
 
 
 
+                    <!-- Link chi tiết được index.js gắn với thành phố của card đang hoạt động. -->
                     <div class="hourly-heading">
 
                         <span>
@@ -456,6 +462,7 @@
 
 
 
+                    <!-- Bốn mốc theo giờ giữ cấu trúc cố định để JS thay thời gian, icon và nhiệt độ từ API. -->
                     <div class="hourly-list">
 
                         <div>
@@ -1306,7 +1313,7 @@
 
     </footer>
 </div>
-    <!-- SDK Firebase phải đứng trước config; place_search phải đứng trước index.js vì home gọi helper dùng chung. -->
+    <!-- Tải thư viện Firebase trước cấu hình; nạp chức năng tìm địa điểm trước mã trang chính để ô tìm kiếm dùng được. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.1/firebase-auth-compat.min.js"
             integrity="sha512-b2PGOE6ClpdFR5WZylPqJ9NEtHyGtdXKIe5wI0qRKVg3VeH9Km8CvihpnySwf6v21TV2cMTUp/BuglUiFLB38Q=="

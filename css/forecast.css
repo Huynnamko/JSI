@@ -585,6 +585,7 @@ h2 {
    FORECAST GRID
 ========================================================= */
 
+/* Desktop cards form a horizontally scrollable snap track; the mobile breakpoint switches this to five columns. */
 .forecast-grid {
 
     display: flex;
@@ -618,6 +619,7 @@ h2 {
    FORECAST CARD
 ========================================================= */
 
+/* Each day keeps a fixed desktop basis so the carousel can scroll consistently one card at a time. */
 .forecast-card {
 
     flex: 0 0 180px;
@@ -786,6 +788,7 @@ h2 {
    TABS
 ========================================================= */
 
+/* Tabs remain one compact control group; the selected class is synchronized by forcecast.js. */
 .tabs {
 
     display: flex;
@@ -937,6 +940,7 @@ h2 {
    SUMMARY ITEMS
 ========================================================= */
 
+/* Summary metrics use equal tracks so labels and values align as one four-item data row. */
 .summary-items {
 
     display: grid;
@@ -1533,6 +1537,7 @@ h2 {
 
 @media (max-width: 300px) {
 
+    /* Nhãn Tomorrow dài hơn tên thứ; giảm riêng font để không tràn khỏi card 5 cột rất hẹp. */
     .forecast-card .forecast-day {
         font-size: 7px;
     }

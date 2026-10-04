@@ -1,14 +1,17 @@
+/* Wrapper trang đích đi lên nhẹ từ dưới và rõ dần sau khi tài liệu mới được tải. */
 html.page-enter .weather-shell,
 html.page-enter body > .card {
     animation: page-content-in 360ms cubic-bezier(.2, .7, .2, 1) both;
 }
 
+/* Wrapper trang hiện tại mờ/nhích lên trước khi đổi URL; chặn click lặp trong thời gian ngắn này. */
 html.page-leaving .weather-shell,
 html.page-leaving body > .card {
     animation: page-content-out 180ms ease-in both;
     pointer-events: none;
 }
 
+/* Keyframes rời trang chỉ kết thúc ở trạng thái mờ/nhích lên để chuyển tiếp sang tài liệu kế tiếp. */
 @keyframes page-content-out {
     to {
         opacity: 0;
@@ -16,6 +19,7 @@ html.page-leaving body > .card {
     }
 }
 
+/* Keyframes vào trang bắt đầu thấp và nhỏ hơn một chút, sau đó trở về đúng kích thước tự nhiên. */
 @keyframes page-content-in {
     from {
         opacity: 0;
@@ -28,11 +32,26 @@ html.page-leaving body > .card {
     }
 }
 
+/* Khi người dùng bật giảm chuyển động, bỏ translate/scale và chỉ giữ fade ngắn, ít gây choáng. */
 @media (prefers-reduced-motion: reduce) {
     html.page-enter .weather-shell,
-    html.page-enter body > .card,
+    html.page-enter body > .card {
+        animation: page-content-fade-in 140ms ease-out both;
+    }
+
     html.page-leaving .weather-shell,
     html.page-leaving body > .card {
-        animation-duration: 1ms;
+        animation: page-content-fade-out 100ms ease-in both;
     }
+}
+
+/* Fade-in dành riêng cho chế độ giảm chuyển động, không thay đổi vị trí hay tỷ lệ wrapper. */
+@keyframes page-content-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Fade-out ngắn giúp trang cũ vẫn có phản hồi trực quan mà không tạo chuyển động không gian. */
+@keyframes page-content-fade-out {
+    to { opacity: 0; }
 }

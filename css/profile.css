@@ -234,6 +234,7 @@ h1 {
     margin-top: 0;
 }
 
+/* Identity heading and account status share a row above the editable field grid. */
 .profile-head {
     display: flex;
     align-items: center;
@@ -256,6 +257,7 @@ h1 {
     transition: box-shadow .2s ease, transform .2s ease, filter .2s ease;
 }
 
+/* Keep edit/logout actions together at the end of the details grid and right-align them on desktop. */
 .profile-actions {
     display: flex;
     gap: 12px;
@@ -325,6 +327,7 @@ h2 {
     padding: 16px;
 }
 
+/* Each direct child is an individual field surface; padding protects labels and long values from the edge. */
 .details > div {
     background: var(--white);
     border: 1px solid rgba(70, 75, 113, .08);
@@ -333,6 +336,7 @@ h2 {
     padding: 15px 16px;
 }
 
+/* Labels are visually secondary and uppercase; values beneath them remain the primary account data. */
 .label {
     display: block;
     color: var(--muted);
@@ -349,6 +353,7 @@ h2 {
     font-weight: 600;
 }
 
+/* Inputs created by profile.js reuse the card width and shared focus styling while edit mode is active. */
 .profile-input {
     width: 100%;
     border: 1px solid var(--line);
@@ -431,6 +436,7 @@ button:focus-visible {
 }
 
 @media (max-width:450px) {
+    /* Thu gọn brand, nút và padding nội dung; email dài được phép ngắt để không tràn card. */
     .brand {
         font-size: 16px;
     }
