@@ -42,12 +42,15 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 
 body {
 
     margin: 0;
+    max-width: 100vw;
+    overflow-x: hidden;
 
     color: var(--white);
 
@@ -89,6 +92,7 @@ body {
     left: 0;
     z-index: 1000;
     width: 100%;
+    max-width: 100vw;
     min-height: var(--header-height);
     margin: 0;
     padding: 18px max(28px, calc((100% - 1180px) / 2));
@@ -1149,12 +1153,31 @@ h2 {
 
 @media (max-width: 900px) {
 
-    /* Collapse multi-column summaries and navigation when the content no longer fits comfortably. */
+    /* Keep the nav visible instead of hiding it behind a cramped header. */
 
-    .main-nav {
-        display: none;
+    .site-header {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        padding: 18px 16px;
+        gap: 12px;
+        border-radius: 18px;
+        flex-wrap: wrap;
+        box-shadow: 0 10px 18px rgba(22, 29, 48, 0.12);
     }
 
+    .main-nav {
+        order: 3;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        margin-left: 0;
+        gap: 10px;
+    }
+
+    .main-nav a {
+        font-size: 10px;
+    }
 
     .login-button {
         margin-left: auto;
@@ -1169,7 +1192,7 @@ h2 {
 
 @media (max-width: 700px) {
 
-    /* Narrow layout stacks headings/tabs and reduces carousel card widths for touch scrolling. */
+    /* Narrow layout stacks headings/tabs and keeps the taskbar visible inside the viewport. */
 
     :root {
         --header-height: 78px;
@@ -1177,11 +1200,26 @@ h2 {
 
 
     .site-header {
-        padding: 20px 16px;
+        left: 16px;
+        right: 16px;
+        width: auto;
+        padding: 18px 16px;
         gap: 12px;
-
+        border-radius: 18px;
+        box-shadow: 0 10px 18px rgba(22, 29, 48, 0.14);
     }
 
+    .main-nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .main-nav a {
+        font-size: 9px;
+        letter-spacing: .08em;
+    }
 
     .brand {
         font-size: 16px;
@@ -1215,9 +1253,18 @@ h2 {
 
 
     .main-nav {
-        display: none;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-left: 0;
     }
 
+    .main-nav a {
+        font-size: 9px;
+        letter-spacing: .08em;
+    }
 
     .login-button {
         margin-left: auto;
@@ -1308,19 +1355,56 @@ h2 {
     }
 
 
-    .forecast-card {
-
-        flex:
-            0 0
-            145px;
-
+    .forecast-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+        overflow-x: hidden;
     }
 
+    .forecast-card {
+        min-width: 0;
+        max-width: none;
+    }
 
-    .forecast-grid {
+    .forecast-card h3 {
+        padding: 10px 2px;
+        font-size: 10px;
+        letter-spacing: 0;
+    }
 
-        gap: 12px;
+    .forecast-card .forecast-day {
+        font-size: 8px;
+    }
 
+    .forecast-card .forecast-date {
+        font-size: 8px;
+    }
+
+    .forecast-card .weather-symbol {
+        height: 36px;
+        margin: 12px 0 8px;
+    }
+
+    .forecast-card .openweather-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .forecast-card strong,
+    .forecast-card > span {
+        margin-bottom: 6px;
+        font-size: 10px;
+    }
+
+    .forecast-card footer {
+        padding: 8px 2px;
+        font-size: 8px;
+    }
+
+    .forecast-card footer b {
+        margin-top: 4px;
+        font-size: 9px;
     }
 
 
@@ -1402,7 +1486,6 @@ h2 {
 
     }
 
-
     .login-button {
 
         padding:
@@ -1444,6 +1527,14 @@ h2 {
 
         gap: 18px 8px;
 
+    }
+
+}
+
+@media (max-width: 300px) {
+
+    .forecast-card .forecast-day {
+        font-size: 7px;
     }
 
 }
